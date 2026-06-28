@@ -599,23 +599,70 @@ app.post("/api/career/chat", async (req, res) => {
 
 // Mount Vite middleware for development
 async function startServer() {
+  console.log("[Careerly Backend] Starting server...");
+  console.log(`[Careerly Backend] process.cwd(): ${process.cwd()}`);
+  console.log(`[Careerly Backend] __dirname: ${__dirname}`);
+  console.log(`[Careerly Backend] NODE_ENV: ${process.env.NODE_ENV}`);
+
+  // Determine distPath dynamically with multiple fallbacks
   let distPath = path.join(process.cwd(), "dist");
-  if (!fs.existsSync(path.join(distPath, "index.html")) && fs.existsSync(path.join(__dirname, "index.html"))) {
-    distPath = __dirname;
+
+  const pathsToTry = [
+    path.join(process.cwd(), "dist"),
+    __dirname,
+    path.join(__dirname, "..", "dist"),
+    process.cwd()
+  ];
+
+  let foundPath = false;
+  for (const p of pathsToTry) {
+    const indexPath = path.join(p, "index.html");
+    const exists = fs.existsSync(indexPath);
+    console.log(`[Careerly Backend] Checking path: ${p} (index.html exists: ${exists})`);
+    if (exists && p !== process.cwd()) { // Prefer a dist path over root index.html if possible
+      distPath = p;
+      foundPath = true;
+      break;
+    }
   }
 
-  const isProduction = process.env.NODE_ENV === "production" || fs.existsSync(path.join(distPath, "index.html"));
+  // Fallback if no built index.html was found but one exists in cwd
+  if (!foundPath && fs.existsSync(path.join(process.cwd(), "index.html"))) {
+    console.log(`[Careerly Backend] No compiled index.html found. Falling back to root workspace index.html.`);
+    distPath = process.cwd();
+  }
+
+  console.log(`[Careerly Backend] Resolved distPath to: ${distPath}`);
+
+  // In development mode (NODE_ENV !== "production" and not running the bundled server in dist),
+  // we want to use Vite dev server middleware to support hot module replacement and live previews.
+  const isProduction = process.env.NODE_ENV === "production";
 
   if (!isProduction) {
+    console.log("[Careerly Backend] Running in DEVELOPMENT mode. Initializing Vite dev server middleware...");
     const vite = await createViteServer({
       server: { middlewareMode: true },
       appType: "spa",
     });
     app.use(vite.middlewares);
   } else {
+    console.log("[Careerly Backend] Running in PRODUCTION mode. Serving static assets.");
     app.use(express.static(distPath));
     app.get("*", (req, res) => {
-      res.sendFile(path.join(distPath, "index.html"));
+      const finalIndexPath = path.join(distPath, "index.html");
+      if (fs.existsSync(finalIndexPath)) {
+        res.sendFile(finalIndexPath);
+      } else {
+        console.error(`[Careerly Backend] CRITICAL: index.html not found at ${finalIndexPath}!`);
+        // Emergency fallback to root index.html if it exists
+        const emergencyPath = path.join(process.cwd(), "index.html");
+        if (fs.existsSync(emergencyPath)) {
+          console.warn(`[Careerly Backend] Serving emergency fallback index.html from root: ${emergencyPath}`);
+          res.sendFile(emergencyPath);
+        } else {
+          res.status(504).send("Error: Application frontend assets not found. Please compile the applet.");
+        }
+      }
     });
   }
 
