@@ -2,10 +2,13 @@ import express from "express";
 import path from "path";
 import dotenv from "dotenv";
 import fs from "fs";
+import { fileURLToPath } from "url";
 import { GoogleGenAI, Type } from "@google/genai";
 import { createServer as createViteServer } from "vite";
 
 dotenv.config();
+
+const _dirname = typeof __dirname !== "undefined" ? __dirname : path.dirname(fileURLToPath(import.meta.url));
 
 const app = express();
 const PORT = 3000;
@@ -878,7 +881,7 @@ app.post("/api/career/chat", async (req, res) => {
 async function startServer() {
   console.log("[Careerly Backend] Starting server...");
   console.log(`[Careerly Backend] process.cwd(): ${process.cwd()}`);
-  console.log(`[Careerly Backend] __dirname: ${__dirname}`);
+  console.log(`[Careerly Backend] _dirname: ${_dirname}`);
   console.log(`[Careerly Backend] NODE_ENV: ${process.env.NODE_ENV}`);
 
   // Determine distPath dynamically with multiple fallbacks
@@ -886,8 +889,8 @@ async function startServer() {
 
   const pathsToTry = [
     path.join(process.cwd(), "dist"),
-    __dirname,
-    path.join(__dirname, "..", "dist"),
+    _dirname,
+    path.join(_dirname, "..", "dist"),
     process.cwd()
   ];
 
