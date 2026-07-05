@@ -1,6 +1,6 @@
 {
-  "name": "Career Path AI",
-  "description": "Career Path AI: An AI-powered career path counselor for Class 11 & 12 stream recommendations, utilizing school browsing logs, hobby analysis, and real-time industry trend grounding.",
+  "name": "CareerPath",
+  "description": "CareerPath: A premium, formal career counseling and stream recommendation portal for Class 11 & 12 high school students.",
   "requestFramePermissions": [],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }

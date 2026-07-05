@@ -24,7 +24,7 @@ export default function CareerAdvisorChatbot({
         {
           id: "welcome-msg",
           role: "model",
-          text: `Hi **${profile.name || "there"}**! I am **Career Path AI**, your premium AI Academic Advisor. 
+          text: `Hi **${profile.name || "there"}**! I am **CareerPath**, your premium Academic Advisor. 
 
 I've analyzed your hobbies and your campus Wi-Fi browsing patterns. Feel free to ask me questions like:
 * *"Why did you recommend this stream based on my hobby of ${profile.hobbies[0] || "coding"}?"*
