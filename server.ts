@@ -15,6 +15,34 @@ const PORT = 3000;
 
 app.use(express.json());
 
+// Google Search Console Site Verification Endpoint
+app.get("/google0b9b072b4189c4a0.html", (req, res) => {
+  res.setHeader("Content-Type", "text/html");
+  res.send("google-site-verification: google0b9b072b4189c4a0.html");
+});
+
+// Sitemap and Robots.txt endpoints
+app.get("/sitemap.xml", (req, res) => {
+  res.setHeader("Content-Type", "application/xml");
+  res.send(`<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>https://priymin143-oss.github.io/National-Stream-Career-Advisor/</loc>
+    <lastmod>2026-07-05</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+</urlset>`);
+});
+
+app.get("/robots.txt", (req, res) => {
+  res.setHeader("Content-Type", "text/plain");
+  res.send(`User-agent: *
+Allow: /
+
+Sitemap: https://priymin143-oss.github.io/National-Stream-Career-Advisor/sitemap.xml`);
+});
+
 // Initialize Gemini API client if configured
 
 let aiClient: GoogleGenAI | null = null;

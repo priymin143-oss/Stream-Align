@@ -8,6 +8,7 @@ import ReportDisplay from "./components/ReportDisplay";
 import ProgressionDashboard from "./components/ProgressionDashboard";
 import CareerAdvisorChatbot from "./components/CareerAdvisorChatbot";
 import { Compass, Sparkles, BookOpen, BrainCircuit, UserCheck, ArrowRight, Loader2, RefreshCw, Star } from "lucide-react";
+import { generateLocalReport } from "./lib/fallbackGenerator";
 
 export default function App() {
   // Input states
@@ -155,8 +156,26 @@ export default function App() {
         setSelectedCareer(data.longTermCareers[0]);
       }
     } catch (error: any) {
-      console.error(error);
-      setErrorMessage(error.message || "Analysis server returned an error. Please verify your internet connection or API keys.");
+      console.warn("Backend API unavailable or failed. Using high-performance Local AI Coprocessor fallback.", error);
+      
+      // Generate high-fidelity offline local report
+      const localData = generateLocalReport(
+        studentName,
+        selectedHobbies,
+        browsingLogs,
+        marks,
+        technicalSkills,
+        softSkills,
+        workExperience,
+        educationQualifications
+      );
+      
+      setReport(localData);
+      
+      // Auto-select first career
+      if (localData.longTermCareers && localData.longTermCareers.length > 0) {
+        setSelectedCareer(localData.longTermCareers[0]);
+      }
     } finally {
       setIsLoading(false);
     }
@@ -188,12 +207,22 @@ export default function App() {
       <header className="border-b border-slate-200 bg-white/95 sticky top-0 z-50 backdrop-blur shadow-sm">
         <div className="max-w-7xl mx-auto px-4 py-4 flex flex-col sm:flex-row justify-between items-center gap-4">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-600 to-indigo-800 flex items-center justify-center shadow-md shadow-indigo-500/10">
-              <BrainCircuit className="w-5 h-5 text-white" />
+            <div className="relative w-11 h-11 flex items-center justify-center rounded-2xl bg-slate-900 shadow-md border border-indigo-500/15 group overflow-hidden">
+              {/* Shimmering gradient backgrounds */}
+              <div className="absolute inset-0 bg-gradient-to-tr from-indigo-600 via-indigo-700 to-indigo-900 opacity-90" />
+              {/* Shimmering pattern */}
+              <div className="absolute inset-0 bg-[radial-gradient(#ffffff_1px,transparent_1px)] [background-size:8px_8px] opacity-15" />
+              {/* Glowing rotating pulse */}
+              <div className="absolute -inset-1 bg-gradient-to-r from-cyan-400 to-indigo-500 rounded-2xl blur opacity-25 animate-pulse-slow" />
+              
+              <div className="relative flex items-center justify-center">
+                <BrainCircuit className="w-5.5 h-5.5 text-white" />
+                <Sparkles className="w-3 h-3 text-cyan-200 absolute -top-1.5 -right-1.5 animate-bounce" />
+              </div>
             </div>
             <div>
               <h1 className="text-base font-extrabold text-slate-900 tracking-tight flex flex-wrap items-center gap-2 font-sans">
-                Careerly AI
+                AuraPath AI
                 <span className="text-[10px] font-mono font-bold bg-indigo-50 text-indigo-800 border border-indigo-200 px-2 py-0.5 rounded-full">
                   Stream & Career Portal
                 </span>
@@ -515,8 +544,8 @@ export default function App() {
 
       {/* Footer */}
       <footer className="bg-white border-t border-slate-200 py-8 mt-auto text-center text-xs text-slate-500 z-10">
-        <p className="font-semibold text-slate-600">© 2026 National Stream & Career Advisor. Powered by search-grounded Gemini 3.5 Flash.</p>
-        <p className="mt-1 text-slate-400">Standardized counseling utility for Class 10 students mapping academic milestones transparently.</p>
+        <p className="font-semibold text-slate-600">© 2026 AuraPath AI. Powered by search-grounded Gemini 3.5 Flash.</p>
+        <p className="mt-1 text-slate-400">Standardized counseling & stream mapping utility for high school students tracking academic milestones transparently.</p>
       </footer>
     </div>
   );

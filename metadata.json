@@ -1,6 +1,6 @@
 {
-  "name": "Careerly",
-  "description": "AI-powered career path counselor for Class 11 & 12 stream recommendations, utilizing school browsing logs, hobby analysis, and real-time industry trend grounding.",
+  "name": "AuraPath AI",
+  "description": "AuraPath AI: An AI-powered career path counselor for Class 11 & 12 stream recommendations, utilizing school browsing logs, hobby analysis, and real-time industry trend grounding.",
   "requestFramePermissions": [],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }

@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://priymin143-oss.github.io/National-Stream-Career-Advisor/sitemap.xml
