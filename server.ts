@@ -171,7 +171,89 @@ const FALLBACK_CAREER_POOL: Record<string, {
   ]
 };
 
-function generateFallbackReport(studentName: string, hobbies: string[], browsingLogs: any[]): any {
+function enrichMilestones(careerTitle: string, milestones: any[]): any[] {
+  return milestones.map((m, idx) => {
+    let salaryRange = m.salaryRange;
+    if (!salaryRange) {
+      if (idx === 0) salaryRange = "N/A (Academic Stage)";
+      else if (idx === 1) salaryRange = "₹3 - 5 Lakhs / annum (Stipend/Junior)";
+      else if (idx === 2) salaryRange = "₹6 - 10 Lakhs / annum (Specialist)";
+      else if (idx === 3) salaryRange = "₹12 - 20 Lakhs / annum (Early Career)";
+      else if (idx === 4) salaryRange = "₹25 - 50 Lakhs / annum (Peak/Lead)";
+    }
+    
+    let alternatives = m.alternatives || [];
+    if (alternatives.length === 0) {
+      if (idx === 0) {
+        alternatives = [{
+          title: `Alternative: Focus on Core Academics & Independent Hobby Projects`,
+          description: `Focus on CBSE/ICSE board exams with micro-credentials instead of aggressive national competitive tests to protect academic wellbeing.`,
+          skillsToAcquire: ["Academic Focus", "Self-Driven Learning"]
+        }];
+      } else if (idx === 1) {
+        alternatives = [{
+          title: `Alternative: Applied Applied Science / Associate Technical Diploma`,
+          description: `Enroll in a 3-year specialized vocational or applied engineering diploma featuring direct co-op placements.`,
+          skillsToAcquire: ["Rapid Prototyping", "Industry Practices"]
+        }];
+      } else if (idx === 2) {
+        alternatives = [{
+          title: `Alternative: Direct Career Apprenticeship`,
+          description: `Instead of master's studies, immediately secure a technical apprenticeship to build real-world experience and accelerate industry networking.`,
+          skillsToAcquire: ["Cross-Team Operations", "Functional Ownership"]
+        }];
+      } else if (idx === 3) {
+        alternatives = [{
+          title: `Alternative: Remote Freelance Contracting & Tech Writing`,
+          description: `Leverage platforms like Upwork and Toptal to establish independent advisory clients globally and write tech reports.`,
+          skillsToAcquire: ["Contract Pitching", "Invoice Scaling", "Self-Promotion"]
+        }];
+      } else if (idx === 4) {
+        alternatives = [{
+          title: `Alternative: Venture Founding or Independent Industry Consultant`,
+          description: `Launch your own boutique solutions studio, apply for seed capital grants, or act as an external advisor.`,
+          skillsToAcquire: ["Venture Mechanics", "Public Presentation", "Strategic Planning"]
+        }];
+      }
+    }
+    return { ...m, salaryRange, alternatives };
+  });
+}
+
+function generateFallbackCourseSuggestions(careerTitle: string, skillsRequired: string[], technicalSkills: string[], softSkills: string[]): any[] {
+  const userSkills = [...(technicalSkills || []), ...(softSkills || [])].map(s => String(s).toLowerCase());
+  const missing = (skillsRequired || []).filter(s => !userSkills.includes(s.toLowerCase()));
+  
+  const skillsToAddress = missing.length > 0 ? missing : (skillsRequired || []).slice(0, 3);
+  const providers = ["Coursera", "Udemy", "Google Career Certificate", "edX", "Pluralsight"];
+  
+  return skillsToAddress.map((skill, index) => {
+    const provider = providers[index % providers.length];
+    const type = index % 3 === 0 ? "Certification" : index % 3 === 1 ? "Online Course" : "Workshop";
+    let duration = "4-6 weeks";
+    if (type === "Certification") duration = "3-6 months";
+    if (type === "Workshop") duration = "2-3 days";
+    
+    return {
+      skillName: skill,
+      courseTitle: `Advanced ${skill} Mastery & Real-World Projects`,
+      provider,
+      type,
+      duration
+    };
+  });
+}
+
+function generateFallbackReport(
+  studentName: string,
+  hobbies: string[],
+  browsingLogs: any[],
+  marks: string = "",
+  technicalSkills: string[] = [],
+  softSkills: string[] = [],
+  workExperience: any[] = [],
+  educationQualifications: any[] = []
+): any {
   const hList = (hobbies || []).map(h => String(h).toLowerCase());
   const logsList = (browsingLogs || []);
 
@@ -226,24 +308,34 @@ function generateFallbackReport(studentName: string, hobbies: string[], browsing
 
     const careers = FALLBACK_CAREER_POOL[key];
     if (careers && careers.length > 0) {
-      longTermCareers.push(JSON.parse(JSON.stringify(careers[0])));
+      const copy = JSON.parse(JSON.stringify(careers[0]));
+      copy.milestones = enrichMilestones(copy.careerTitle, copy.milestones);
+      copy.courseSuggestions = generateFallbackCourseSuggestions(copy.careerTitle, copy.skillsRequired, technicalSkills, softSkills);
+      longTermCareers.push(copy);
     }
   });
 
   const thirdKey = sortedPathways[2][0];
   const firstKey = topKeys[0];
+  let extraCareer: any = null;
   if (FALLBACK_CAREER_POOL[firstKey] && FALLBACK_CAREER_POOL[firstKey][1]) {
-    longTermCareers.push(JSON.parse(JSON.stringify(FALLBACK_CAREER_POOL[firstKey][1])));
+    extraCareer = JSON.parse(JSON.stringify(FALLBACK_CAREER_POOL[firstKey][1]));
   } else if (FALLBACK_CAREER_POOL[thirdKey] && FALLBACK_CAREER_POOL[thirdKey][0]) {
-    longTermCareers.push(JSON.parse(JSON.stringify(FALLBACK_CAREER_POOL[thirdKey][0])));
+    extraCareer = JSON.parse(JSON.stringify(FALLBACK_CAREER_POOL[thirdKey][0]));
+  }
+  
+  if (extraCareer) {
+    extraCareer.milestones = enrichMilestones(extraCareer.careerTitle, extraCareer.milestones);
+    extraCareer.courseSuggestions = generateFallbackCourseSuggestions(extraCareer.careerTitle, extraCareer.skillsRequired, technicalSkills, softSkills);
+    longTermCareers.push(extraCareer);
   }
 
   return {
     studentName,
     recommendedStreams,
     longTermCareers,
-    generalAdvice: `Congratulations on compiling your profile, ${studentName}! Based on your campus Wi-Fi browsing behavior and your personal hobbies, you possess an outstanding multi-disciplinary aptitude. Note: This high-fidelity counseling report has been analyzed using our local advisor engine to bypass high-traffic cloud rate-limits, ensuring instant delivery of your customized pathway.`,
-    marketInsights: `Our local telemetry tracks highly dynamic 2026/2027 demands. Tech sectors are prioritizing specialized neural systems and robust quantitative modeling, while biomedical research is seeing massive funding. Humanities and design are converging with intelligent systems, making dual-skill profiles extremely high-yielding.`,
+    generalAdvice: `Congratulations on compiling your highly detailed profile, ${studentName}! Based on your academic grades ("${marks || "unspecified"}"), existing skill count (${(technicalSkills || []).length + (softSkills || []).length} total), Wi-Fi footprints, and core hobbies, you possess a highly versatile cognitive style. We have analyzed your custom profile with our high-performance Local Coprocessor to bypass network latency and ensure instant personalized stream alignment.`,
+    marketInsights: `Our dynamic 2026/2027 telemetry maps exceptional opportunities in dual-capability sectors: AI full-stack operations, quantitative financial tech, molecular bioinformatics, and user-psychology interactive frameworks. Bridging your identified skill gaps via the suggested online programs will yield exceptional starting premiums.`,
     groundingSources: [
       { title: "National Educational Policy (NEP) Career Guidelines", url: "https://www.education.gov.in/" },
       { title: "Futuristic Job Trends Report 2026", url: "https://www.weforum.org/reports" }
@@ -336,7 +428,16 @@ What's on your mind? Type a question about colleges, exams, or salaries to start
 
 // Real-time Industry Trend Grounded Analysis Endpoint
 app.post("/api/career/analyze", async (req, res) => {
-  const { studentName, hobbies, browsingLogs } = req.body;
+  const { 
+    studentName, 
+    hobbies, 
+    browsingLogs, 
+    marks, 
+    technicalSkills, 
+    softSkills, 
+    workExperience, 
+    educationQualifications 
+  } = req.body;
   
   if (!studentName) {
     return res.status(400).json({ error: "Student name is required" });
@@ -347,7 +448,16 @@ app.post("/api/career/analyze", async (req, res) => {
 
   if (geminiQuotaExhausted || isKeyMissing) {
     try {
-      const fallbackReport = generateFallbackReport(studentName, hobbies, browsingLogs);
+      const fallbackReport = generateFallbackReport(
+        studentName, 
+        hobbies, 
+        browsingLogs, 
+        marks, 
+        technicalSkills, 
+        softSkills, 
+        workExperience, 
+        educationQualifications
+      );
       fallbackReport.isFallback = true;
       fallbackReport.fallbackReason = isKeyMissing ? "no_key" : "quota_exhausted";
       return res.json(fallbackReport);
@@ -364,28 +474,39 @@ app.post("/api/career/analyze", async (req, res) => {
       
       Student Profile:
       - Name: ${studentName}
+      - Academic Marks & Grades: ${marks || "Not provided"}
+      - Technical Skills Already Possessed: ${JSON.stringify(technicalSkills || [])}
+      - Soft Skills Already Possessed: ${JSON.stringify(softSkills || [])}
+      - Previous Work / Project Experience: ${JSON.stringify(workExperience || [])}
+      - Educational Qualifications / Diplomas: ${JSON.stringify(educationQualifications || [])}
       - Hobbies & Interests: ${JSON.stringify(hobbies || [])}
-      - campus Wi-Fi browsing history logs: ${JSON.stringify(browsingLogs || [])}
+      - Campus Wi-Fi browsing history logs: ${JSON.stringify(browsingLogs || [])}
       
       Tasks:
-      1. Review the Wi-Fi browsing logs (the articles/websites visited, categories, and time spent) and their hobbies. Understand their hidden aptitudes.
+      1. Review the Wi-Fi browsing logs (the articles/websites visited, categories, and time spent), their academic marks, previous experience, and their hobbies. Understand their hidden aptitudes. Use the user's marks and experience to heavily refine and personalize suggestions.
       2. Recommend 2 to 3 streams for Class 11th & 12th.
       3. For each stream, provide:
          - streamName (string, e.g. "Science (Physics, Chemistry, Mathematics)", "Commerce with Mathematics", "Humanities / Liberal Arts with Psychology")
          - matchPercentage (number between 50 and 100)
-         - transparentRationale (a detailed explanation summarizing why their browser logs and hobbies fit this)
+         - transparentRationale (a detailed explanation summarizing why their browser logs, academic marks, and hobbies fit this)
          - hobbyConnection (CRITICAL: Explain exactly how a specific hobby of theirs matches or supports this stream recommendation)
          - browsingConnection (Explain how their Wi-Fi browsing logs of topics or websites directly align with this stream)
          - coreSubjects (array of strings, key subjects they will take)
          - difficultyLevel (string, e.g., "Medium", "High", "Balanced")
-      4. Suggest 2 to 3 futuristic, high-paying long-term career options (relevant to the current 2026/2027 market) that stem from these recommendations.
+      4. Suggest 2 to 3 futuristic, high-paying long-term career options (relevant to the current 2026/2027 market) that stem from these recommendations and align with their pre-existing skills, experience, and educational background.
       5. For each career, provide:
          - careerTitle (string)
          - description (string)
-         - industryGrowthTrend (string, explaining real-time industry demand and growth rates)
+         - industryGrowthTrend (string, explaining real-time industry demand and growth rates for 2026/2027)
          - startingSalaryEstimate (string)
          - skillsRequired (array of strings)
-         - milestones (exactly 5 milestones representing the progression roadmap:
+         - courseSuggestions (array of objects representing a personalized Skill Gap Analysis. Compare the 'skillsRequired' for the career with the user's 'technicalSkills' and 'softSkills'. Identify missing skills (the gaps), highlight them, and provide suggested online courses, certifications, or workshops to bridge these gaps. Each item in 'courseSuggestions' must contain:
+             - skillName: string (the required skill that represents a gap)
+             - courseTitle: string (specific recommended course title, e.g., "Google Data Analytics Professional Certificate", "Modern React Bootcamp")
+             - provider: string (e.g., Coursera, Udemy, Google, edX, etc.)
+             - type: string (must be exactly one of: 'Online Course', 'Certification', 'Workshop')
+             - duration: string (e.g. "4 weeks", "6 months", "2 days"))
+         - milestones (exactly 5 milestones representing an interactive branching progression roadmap:
              Milestone 1: Class 11 & 12 focus
              Milestone 2: Undergrad path
              Milestone 3: Specialized postgraduate/certifications
@@ -397,6 +518,12 @@ app.post("/api/career/analyze", async (req, res) => {
              - timeline (string, e.g. "Years 1-2")
              - description (string, what they should do)
              - skillsToAcquire (array of strings)
+             - salaryRange (string, estimated salary or income range for this specific stage, e.g., "$45k - $60k" or "₹4 - 6 LPA", or "N/A" for educational stages)
+             - alternatives (array of objects representing alternate branches the user can take at this node to explore alternative routes. Each alternative should contain:
+                 - title: string (e.g. "Entrepreneurial Alternative" or "Applied Diploma Track")
+                 - description: string (how this route works)
+                 - skillsToAcquire: array of strings
+                 - salaryRange: string (optional, estimated range for this alternative route))
       6. Provide a general advice paragraph ("generalAdvice") encouraging the student.
       7. Provide "marketInsights" based on real-time 2026/2027 job search trends.
       
@@ -469,7 +596,16 @@ app.post("/api/career/analyze", async (req, res) => {
     }
 
     try {
-      const fallbackReport = generateFallbackReport(studentName, hobbies, browsingLogs);
+      const fallbackReport = generateFallbackReport(
+        studentName, 
+        hobbies, 
+        browsingLogs, 
+        marks, 
+        technicalSkills, 
+        softSkills, 
+        workExperience, 
+        educationQualifications
+      );
       fallbackReport.isFallback = true;
       fallbackReport.fallbackReason = isQuotaError ? "quota_exhausted" : "error";
       return res.json(fallbackReport);

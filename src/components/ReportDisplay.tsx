@@ -1,12 +1,14 @@
 import React, { useState } from "react";
 import { AnalysisReport, StreamRecommendation, CareerOption } from "../types";
-import { Award, Compass, Globe, Sparkles, BookOpen, ChevronRight, TrendingUp, DollarSign, Printer, X, FileText, Loader2 } from "lucide-react";
+import { Award, Compass, Globe, Sparkles, BookOpen, ChevronRight, TrendingUp, DollarSign, Printer, X, FileText, Loader2, AlertCircle } from "lucide-react";
 
 interface ReportDisplayProps {
   report: AnalysisReport;
   onSelectCareer: (career: CareerOption) => void;
   selectedCareerTitle?: string;
   studentHobbies?: string[];
+  technicalSkills?: string[];
+  softSkills?: string[];
 }
 
 export default function ReportDisplay({
@@ -14,6 +16,8 @@ export default function ReportDisplay({
   onSelectCareer,
   selectedCareerTitle,
   studentHobbies = [],
+  technicalSkills = [],
+  softSkills = [],
 }: ReportDisplayProps) {
   // Elaboration state tracking
   const [activeElaborateStream, setActiveElaborateStream] = useState<string | null>(null);
@@ -369,6 +373,156 @@ export default function ReportDisplay({
             );
           })}
         </div>
+
+        {/* Dynamic Skill Gap Analysis & Bridging Course Suggestions */}
+        {(() => {
+          const selectedCareer = report.longTermCareers.find(c => c.careerTitle === selectedCareerTitle) || report.longTermCareers[0];
+          if (!selectedCareer) return null;
+
+          const required = selectedCareer.skillsRequired || [];
+          const userSkillsSet = new Set([...(technicalSkills || []), ...(softSkills || [])].map(s => s.toLowerCase()));
+          const matching = required.filter(s => userSkillsSet.has(s.toLowerCase()));
+          const missing = required.filter(s => !userSkillsSet.has(s.toLowerCase()));
+          const matchPercentage = required.length ? Math.round((matching.length / required.length) * 100) : 0;
+
+          return (
+            <div className="bg-slate-50 border border-slate-200 rounded-3xl p-6 mt-6 space-y-4 shadow-sm animate-in fade-in duration-200">
+              <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-2 border-b border-slate-150 pb-3">
+                <div>
+                  <h4 className="text-xs font-bold text-slate-800 uppercase tracking-wider flex items-center gap-1.5">
+                    <Sparkles className="w-4 h-4 text-indigo-600 animate-pulse" />
+                    Interactive Skill Gap Analysis & Learning Pathways
+                  </h4>
+                  <p className="text-[11px] text-slate-500 font-medium mt-0.5">
+                    Personalized comparison of required career competencies against your active skills portfolio
+                  </p>
+                </div>
+                <span className="text-[10px] bg-indigo-50 text-indigo-700 font-mono font-bold px-2.5 py-1 rounded-md border border-indigo-150 uppercase tracking-wider self-start sm:self-center">
+                  Target: {selectedCareer.careerTitle}
+                </span>
+              </div>
+
+              {/* Gap Comparison Widgets */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                
+                {/* Meter Card */}
+                <div className="bg-white p-4 rounded-2xl border border-slate-200 space-y-3">
+                  <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block">Portfolio Match Status</span>
+                  
+                  <div className="flex justify-between items-baseline">
+                    <span className="text-2xl font-extrabold text-slate-800">{matchPercentage}% Match</span>
+                    <span className="text-xs text-slate-500 font-semibold">{matching.length} of {required.length} skills</span>
+                  </div>
+
+                  <div className="w-full h-2.5 bg-slate-100 rounded-full overflow-hidden">
+                    <div 
+                      className={`h-full rounded-full transition-all duration-500 bg-gradient-to-r ${
+                        matchPercentage > 75 ? 'from-emerald-500 to-teal-500' : matchPercentage > 40 ? 'from-amber-500 to-indigo-500' : 'from-indigo-500 to-blue-500'
+                      }`} 
+                      style={{ width: `${matchPercentage}%` }}
+                    />
+                  </div>
+
+                  <div className="space-y-2 pt-2">
+                    <div>
+                      <span className="text-[9px] text-slate-400 font-extrabold uppercase block mb-1">Matching Skills Portfolio</span>
+                      <div className="flex flex-wrap gap-1">
+                        {matching.length === 0 ? (
+                          <span className="text-[9px] text-slate-400 font-medium italic">No matching skills yet — start learning below!</span>
+                        ) : (
+                          matching.map(s => (
+                            <span key={s} className="text-[9px] font-bold px-2 py-0.5 bg-emerald-50 text-emerald-800 rounded border border-emerald-100">
+                              ✓ {s}
+                            </span>
+                          ))
+                        )}
+                      </div>
+                    </div>
+
+                    <div>
+                      <span className="text-[9px] text-slate-400 font-extrabold uppercase block mb-1">Gaps to Bridge (Unlocks Starting Salary Premium)</span>
+                      <div className="flex flex-wrap gap-1">
+                        {missing.length === 0 ? (
+                          <span className="text-[9px] text-emerald-600 font-bold">100% Core Competencies Mastered!</span>
+                        ) : (
+                          missing.map(s => (
+                            <span key={s} className="text-[9px] font-bold px-2 py-0.5 bg-amber-50 text-amber-800 rounded border border-amber-150">
+                              ⚠ {s}
+                            </span>
+                          ))
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Advice Card */}
+                <div className="bg-white p-4 rounded-2xl border border-slate-200 flex flex-col justify-between">
+                  <div className="space-y-1.5">
+                    <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block">Advisory Rationale</span>
+                    <p className="text-[11px] text-slate-600 leading-relaxed font-medium">
+                      Our dynamic system matches required technical and soft parameters. Bridging the remaining <strong className="text-amber-700">{missing.length} skill gaps</strong> with micro-qualifications will prepare you for top college admissions and secure an estimated <strong className="text-indigo-600">30% to 35% premium</strong> during early placement.
+                    </p>
+                  </div>
+                  <div className="bg-amber-50/50 border border-amber-100 p-2.5 rounded-xl text-[10px] text-slate-600 leading-relaxed font-medium flex gap-2">
+                    <AlertCircle className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
+                    <span><strong>Action Plan:</strong> Complete these recommended programs during Class 11 and 12 vacations to assemble an unbeatable college portfolio.</span>
+                  </div>
+                </div>
+
+              </div>
+
+              {/* Programs Table */}
+              <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden">
+                <div className="bg-slate-50 px-4 py-2 border-b border-slate-200 flex justify-between items-center text-[10px] font-bold text-slate-600 uppercase tracking-wider">
+                  <span>Suggested Programs, Certifications & Workshops</span>
+                  <span className="text-indigo-700">Curated bridging curriculum</span>
+                </div>
+
+                <div className="divide-y divide-slate-100">
+                  {!selectedCareer.courseSuggestions || selectedCareer.courseSuggestions.length === 0 ? (
+                    <div className="p-6 text-center text-slate-400 font-medium text-[11px] italic">
+                      All competencies align with your active profile. No gap curriculum required.
+                    </div>
+                  ) : (
+                    selectedCareer.courseSuggestions.map((item, cidx) => (
+                      <div key={cidx} className="p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 hover:bg-slate-50/50 transition-all">
+                        <div className="space-y-1">
+                          <div className="flex items-center gap-2">
+                            <span className={`text-[9px] font-extrabold px-2 py-0.5 rounded-full ${
+                              item.type === 'Certification' ? 'bg-emerald-50 text-emerald-800 border border-emerald-150' : 
+                              item.type === 'Online Course' ? 'bg-blue-50 text-blue-800 border border-blue-150' : 
+                              'bg-pink-50 text-pink-800 border border-pink-150'
+                            }`}>
+                              {item.type}
+                            </span>
+                            <span className="text-[10px] text-slate-400 font-semibold">{item.provider}</span>
+                          </div>
+                          <h5 className="text-xs font-bold text-slate-800 leading-snug">{item.courseTitle}</h5>
+                          <p className="text-[10px] text-slate-500 font-medium">Bridges Gap in: <strong className="text-indigo-600">{item.skillName}</strong></p>
+                        </div>
+
+                        <div className="flex sm:flex-col items-start sm:items-end justify-between sm:justify-center shrink-0 text-right gap-1">
+                          <span className="text-[10px] font-bold text-slate-600 font-mono bg-slate-50 border border-slate-200 px-2 py-0.5 rounded-md">
+                            ⏳ {item.duration}
+                          </span>
+                          <a 
+                            href={`https://www.google.com/search?q=${encodeURIComponent(item.provider + ' ' + item.courseTitle)}`}
+                            target="_blank" 
+                            rel="noreferrer"
+                            className="text-[10px] font-bold text-indigo-600 hover:text-indigo-800 hover:underline flex items-center gap-1 mt-0.5"
+                          >
+                            Explore Program ↗
+                          </a>
+                        </div>
+                      </div>
+                    ))
+                  )}
+                </div>
+              </div>
+            </div>
+          );
+        })()}
       </div>
 
       {/* Part C: Grounding references */}

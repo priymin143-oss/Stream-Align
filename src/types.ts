@@ -8,9 +8,26 @@ export interface BrowsingLog {
   timestamp: string;
 }
 
+export interface WorkExperience {
+  jobTitle: string;
+  company: string;
+  duration: string; // e.g., "3 months", "2025 - 2026"
+}
+
+export interface EducationQualification {
+  degree: string;
+  institution: string;
+  graduationDate: string; // e.g., "May 2024"
+}
+
 export interface StudentProfile {
   name: string;
   hobbies: string[];
+  marks: string; // Academic grades/marks (e.g. "Class 10: 92% in Science, 95% in Math")
+  technicalSkills: string[];
+  softSkills: string[];
+  workExperience: WorkExperience[];
+  educationQualifications: EducationQualification[];
   browsingLogs: BrowsingLog[];
 }
 
@@ -24,13 +41,30 @@ export interface StreamRecommendation {
   difficultyLevel: "Medium" | "High" | "Balanced";
 }
 
+export interface AlternativeMilestone {
+  title: string;
+  description: string;
+  salaryRange?: string;
+  skillsToAcquire: string[];
+}
+
 export interface CareerMilestone {
   stage: string; // e.g., "Class 11 & 12", "Undergraduation", "Postgrad/Specialization", "Early Career", "Long-term Professional"
   title: string;
   timeline: string; // e.g., "Ages 16-18", "Ages 18-22", etc.
   description: string;
   skillsToAcquire: string[];
+  salaryRange?: string; // Optional salary for this role/stage
+  alternatives?: AlternativeMilestone[]; // Alternative branches at this point
   isCompleted?: boolean;
+}
+
+export interface CourseSuggestion {
+  skillName: string;
+  courseTitle: string;
+  provider: string; // e.g. "Coursera", "Udemy", "Google Certification", "edX"
+  type: "Online Course" | "Certification" | "Workshop";
+  duration: string;
 }
 
 export interface CareerOption {
@@ -40,6 +74,7 @@ export interface CareerOption {
   startingSalaryEstimate: string;
   skillsRequired: string[];
   milestones: CareerMilestone[];
+  courseSuggestions?: CourseSuggestion[];
 }
 
 export interface GroundingSource {

@@ -1,4 +1,4 @@
-import { BrowsingLog, StudentProfile } from "../types";
+import { BrowsingLog, StudentProfile, WorkExperience, EducationQualification } from "../types";
 
 export const COMMON_HOBBIES = [
   "Game development",
@@ -117,6 +117,11 @@ export interface StudentPersona {
   avatar: string;
   description: string;
   hobbies: string[];
+  marks: string;
+  technicalSkills: string[];
+  softSkills: string[];
+  workExperience: WorkExperience[];
+  educationQualifications: EducationQualification[];
   logs: BrowsingLog[];
 }
 
@@ -126,6 +131,15 @@ export const PRESET_PERSONAS: StudentPersona[] = [
     avatar: "🔭",
     description: "Fascinated by high-performance computing, exoplanets, and puzzle-solving.",
     hobbies: ["Game development", "Astrophotography", "Rubik's cube solving", "Model rocketry"],
+    marks: "Science: 95/100, Mathematics: 98/100, Computer Science Elective: 99/100, English: 88/100",
+    technicalSkills: ["Python Programming", "Basic Robotics (Arduino)", "HTML/CSS & Tailwind", "3D CAD Modeling"],
+    softSkills: ["Logical Deduction", "Systemic Troubleshooting", "Time Boxing"],
+    workExperience: [
+      { jobTitle: "Student Robotics Coordinator", company: "Alpha Tech School Club", duration: "6 months (2025)" }
+    ],
+    educationQualifications: [
+      { degree: "Class 10 CBSE Matriculation", institution: "St. Xavier's High School", graduationDate: "May 2025" }
+    ],
     logs: [
       MOCK_CAMPUS_LOGS[0], // GitHub
       MOCK_CAMPUS_LOGS[1], // arXiv Astrophysics
@@ -137,6 +151,15 @@ export const PRESET_PERSONAS: StudentPersona[] = [
     avatar: "🎨",
     description: "Creative storyteller who designs mock application screens and writes speculative fiction.",
     hobbies: ["Digital sketching", "Creative writing", "Photography & Video Editing", "Playing acoustic guitar"],
+    marks: "English Literature: 97/100, History & Civics: 94/100, Art Portfolio Elective: Grade A+, Mathematics: 75/100",
+    technicalSkills: ["Figma UI/UX Design", "Adobe Illustrator", "Video Editing (Premiere Pro)"],
+    softSkills: ["Narrative World-Building", "Empathy-First Modeling", "Active Listening"],
+    workExperience: [
+      { jobTitle: "Chief Editor & Illustrator", company: "St. Mary's Monthly School Chronicle", duration: "1 year (2025)" }
+    ],
+    educationQualifications: [
+      { degree: "Class 10 ICSE Matriculation", institution: "St. Mary's Convent School", graduationDate: "April 2025" }
+    ],
     logs: [
       MOCK_CAMPUS_LOGS[3], // Behance
       MOCK_CAMPUS_LOGS[6], // Narrative world-building
@@ -148,6 +171,15 @@ export const PRESET_PERSONAS: StudentPersona[] = [
     avatar: "📈",
     description: "Enthusiastic about finance, macroeconomics, stock indicators, and complex strategy games.",
     hobbies: ["Playing chess", "Stock market simulation", "Debating"],
+    marks: "Mathematics: 92/100, Social Studies: 94/100, English: 90/100, Financial Literacy Elective: 98/100",
+    technicalSkills: ["MS Excel Modeling", "Basic SQL Queries", "Stock Valuation Methods"],
+    softSkills: ["Persuasive Public Speaking", "Strategic Risk Valuation", "Lateral Analysis"],
+    workExperience: [
+      { jobTitle: "Debate Club Treasurer", company: "Inter-School Youth Parliament", duration: "4 months (2025)" }
+    ],
+    educationQualifications: [
+      { degree: "Class 10 CBSE Matriculation", institution: "Delhi Public School R.K. Puram", graduationDate: "May 2025" }
+    ],
     logs: [
       MOCK_CAMPUS_LOGS[2], // Investopedia
       MOCK_CAMPUS_LOGS[4], // AI Ethics philosophy
@@ -159,6 +191,15 @@ export const PRESET_PERSONAS: StudentPersona[] = [
     avatar: "🌱",
     description: "Passionate about environment systems, plant genetics, organic chemistry, and animal wellness.",
     hobbies: ["Gardening", "Volunteering at animal shelters", "Hiking & Map Reading"],
+    marks: "Biology: 98/100, Chemistry: 94/100, Environmental Studies: 99/100, Mathematics: 82/100",
+    technicalSkills: ["Laboratory Pipetting", "Specimen Preservation", "Basic Excel Entry", "Soil pH Assessment"],
+    softSkills: ["Environmental Caregiving", "Collaborative Teamwork", "Compassionate Outreach"],
+    workExperience: [
+      { jobTitle: "Animal Welfare Intern", company: "Paws & Whiskers Rescue Shelter", duration: "3 months (2025)" }
+    ],
+    educationQualifications: [
+      { degree: "Class 10 CBSE Matriculation", institution: "National Public School Bangalore", graduationDate: "May 2025" }
+    ],
     logs: [
       MOCK_CAMPUS_LOGS[1], // arXiv
       MOCK_CAMPUS_LOGS[5], // Nature Biotech CRISPR

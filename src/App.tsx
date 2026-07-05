@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react";
-import { StudentProfile, AnalysisReport, BrowsingLog, CareerOption } from "./types";
+import { StudentProfile, AnalysisReport, BrowsingLog, CareerOption, WorkExperience, EducationQualification } from "./types";
 import { PRESET_PERSONAS, StudentPersona } from "./data/mockData";
 import BrowsingHistorySimulator from "./components/BrowsingHistorySimulator";
 import HobbyInterestInput from "./components/HobbyInterestInput";
+import StudentProfileEditor from "./components/StudentProfileEditor";
 import ReportDisplay from "./components/ReportDisplay";
 import ProgressionDashboard from "./components/ProgressionDashboard";
 import CareerAdvisorChatbot from "./components/CareerAdvisorChatbot";
@@ -14,6 +15,13 @@ export default function App() {
   const [selectedHobbies, setSelectedHobbies] = useState<string[]>(PRESET_PERSONAS[0].hobbies);
   const [browsingLogs, setBrowsingLogs] = useState<BrowsingLog[]>(PRESET_PERSONAS[0].logs);
   
+  // Expanded profile states
+  const [marks, setMarks] = useState<string>(PRESET_PERSONAS[0].marks || "");
+  const [technicalSkills, setTechnicalSkills] = useState<string[]>(PRESET_PERSONAS[0].technicalSkills || []);
+  const [softSkills, setSoftSkills] = useState<string[]>(PRESET_PERSONAS[0].softSkills || []);
+  const [workExperience, setWorkExperience] = useState<WorkExperience[]>(PRESET_PERSONAS[0].workExperience || []);
+  const [educationQualifications, setEducationQualifications] = useState<EducationQualification[]>(PRESET_PERSONAS[0].educationQualifications || []);
+
   // App system states
   const [isLoading, setIsLoading] = useState(false);
   const [report, setReport] = useState<AnalysisReport | null>(null);
@@ -65,6 +73,11 @@ export default function App() {
     setStudentName(persona.name);
     setSelectedHobbies(persona.hobbies);
     setBrowsingLogs(persona.logs);
+    setMarks(persona.marks || "");
+    setTechnicalSkills(persona.technicalSkills || []);
+    setSoftSkills(persona.softSkills || []);
+    setWorkExperience(persona.workExperience || []);
+    setEducationQualifications(persona.educationQualifications || []);
     // Clear old state
     setReport(null);
     setSelectedCareer(null);
@@ -120,7 +133,12 @@ export default function App() {
         body: JSON.stringify({
           studentName,
           hobbies: selectedHobbies,
-          browsingLogs
+          browsingLogs,
+          marks,
+          technicalSkills,
+          softSkills,
+          workExperience,
+          educationQualifications
         })
       });
 
@@ -317,6 +335,20 @@ export default function App() {
             />
           </div>
 
+          {/* Extended Academic and Skills Profile Editor */}
+          <StudentProfileEditor
+            marks={marks}
+            setMarks={setMarks}
+            technicalSkills={technicalSkills}
+            setTechnicalSkills={setTechnicalSkills}
+            softSkills={softSkills}
+            setSoftSkills={setSoftSkills}
+            workExperience={workExperience}
+            setWorkExperience={setWorkExperience}
+            educationQualifications={educationQualifications}
+            setEducationQualifications={setEducationQualifications}
+          />
+
           {/* AI Coprocessor: Live Compatibility Matrix */}
           <div className="bg-indigo-50/40 p-5 rounded-2xl border border-indigo-100 space-y-4 mt-6 shadow-sm">
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
@@ -436,13 +468,24 @@ export default function App() {
                       }}
                       selectedCareerTitle={selectedCareer?.careerTitle}
                       studentHobbies={selectedHobbies}
+                      technicalSkills={technicalSkills}
+                      softSkills={softSkills}
                     />
                   </div>
 
                   {/* Interactive Advisor Chatbot */}
                   <div className="lg:col-span-5 h-full">
                     <CareerAdvisorChatbot
-                      profile={{ name: studentName, hobbies: selectedHobbies, browsingLogs }}
+                      profile={{
+                        name: studentName,
+                        hobbies: selectedHobbies,
+                        browsingLogs,
+                        marks,
+                        technicalSkills,
+                        softSkills,
+                        workExperience,
+                        educationQualifications
+                      }}
                       lastReport={report}
                     />
                   </div>
