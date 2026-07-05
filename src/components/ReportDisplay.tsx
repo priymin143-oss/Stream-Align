@@ -1,27 +1,93 @@
-import React from "react";
+import React, { useState } from "react";
 import { AnalysisReport, StreamRecommendation, CareerOption } from "../types";
-import { Award, Compass, Globe, Sparkles, BookOpen, ChevronRight, TrendingUp, DollarSign } from "lucide-react";
+import { Award, Compass, Globe, Sparkles, BookOpen, ChevronRight, TrendingUp, DollarSign, Printer, X, FileText, Loader2 } from "lucide-react";
 
 interface ReportDisplayProps {
   report: AnalysisReport;
   onSelectCareer: (career: CareerOption) => void;
   selectedCareerTitle?: string;
+  studentHobbies?: string[];
 }
 
 export default function ReportDisplay({
   report,
   onSelectCareer,
   selectedCareerTitle,
+  studentHobbies = [],
 }: ReportDisplayProps) {
-  // Color badges for streams
-  const getStreamBadgeStyle = (percentage: number) => {
-    if (percentage >= 85) return "from-indigo-600/20 to-violet-600/20 text-indigo-300 border-indigo-500/30";
-    if (percentage >= 70) return "from-emerald-600/20 to-teal-600/20 text-emerald-300 border-emerald-500/30";
-    return "from-sky-600/20 to-blue-600/20 text-sky-300 border-sky-500/30";
+  // Elaboration state tracking
+  const [activeElaborateStream, setActiveElaborateStream] = useState<string | null>(null);
+  const [activeElaborateHobby, setActiveElaborateHobby] = useState<string | null>(null);
+  const [isElaborating, setIsElaborating] = useState<boolean>(false);
+  const [elaborationResult, setElaborationResult] = useState<string | null>(null);
+  const [elaborationError, setElaborationError] = useState<string | null>(null);
+  const [showDossierModal, setShowDossierModal] = useState<boolean>(false);
+
+  // Trigger Backend Career Elaboration API
+  const handleTriggerElaborate = async (streamName: string, hobby: string) => {
+    setActiveElaborateStream(streamName);
+    setActiveElaborateHobby(hobby);
+    setIsElaborating(true);
+    setElaborationResult(null);
+    setElaborationError(null);
+
+    try {
+      const response = await fetch("/api/career/elaborate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          studentName: report.studentName,
+          hobby: hobby,
+          stream: streamName,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to generate detailed connection");
+      }
+
+      const data = await response.json();
+      setElaborationResult(data.text);
+    } catch (err: any) {
+      setElaborationError(err.message || "An error occurred during academic elaboration");
+    } finally {
+      setIsElaborating(false);
+    }
   };
 
   return (
     <div id="report-display-container" className="space-y-8">
+      {/* Dynamic Print CSS Style block */}
+      <style>{`
+        @media print {
+          body * {
+            visibility: hidden;
+          }
+          #printable-dossier-root, #printable-dossier-root * {
+            visibility: visible;
+          }
+          #printable-dossier-root {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: auto;
+            overflow: visible;
+            padding: 0px !important;
+            margin: 0px !important;
+            background: white !important;
+            color: black !important;
+          }
+          .print-hide {
+            display: none !important;
+          }
+          @page {
+            size: auto;
+            margin: 15mm;
+          }
+        }
+      `}</style>
+
       {report.isFallback && (
         <div className="bg-amber-50/80 border border-amber-200 rounded-2xl p-4 flex gap-3 text-amber-950 shadow-sm">
           <div className="w-8 h-8 rounded-lg bg-amber-100 border border-amber-200 flex items-center justify-center shrink-0">
@@ -50,9 +116,19 @@ export default function ReportDisplay({
           <Award className="w-40 h-40 text-indigo-600" />
         </div>
         
-        <div className="flex items-center gap-2 mb-3">
-          <span className="h-2 w-2 rounded-full bg-indigo-500 animate-pulse" />
-          <span className="text-[10px] uppercase font-bold tracking-widest text-indigo-600 font-bold">Personalized Counseling Report</span>
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
+          <div className="flex items-center gap-2">
+            <span className="h-2 w-2 rounded-full bg-indigo-500 animate-pulse" />
+            <span className="text-[10px] uppercase font-bold tracking-widest text-indigo-600 font-bold">Personalized Counseling Report</span>
+          </div>
+          
+          <button
+            onClick={() => setShowDossierModal(true)}
+            className="inline-flex items-center gap-1.5 text-xs bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold px-4 py-2 rounded-xl transition-all shadow-md shadow-indigo-600/15"
+          >
+            <Printer className="w-4 h-4" />
+            View & Print Official Dossier
+          </button>
         </div>
 
         <h3 className="text-2xl font-bold text-slate-800 mb-2">
@@ -87,14 +163,14 @@ export default function ReportDisplay({
           {report.recommendedStreams.map((stream: StreamRecommendation, idx) => (
             <div
               key={idx}
-              className="bg-white rounded-3xl p-5 border border-slate-200 shadow-sm flex flex-col justify-between"
+              className="bg-white rounded-3xl p-5 border border-slate-200 shadow-sm flex flex-col justify-between space-y-4"
             >
               <div>
                 <div className="flex justify-between items-start gap-2 mb-3">
                   <h4 className="text-base font-bold text-slate-800 tracking-tight">
                     {stream.streamName}
                   </h4>
-                  <span className="text-xs font-mono font-bold bg-slate-50 px-2.5 py-1 rounded-md border border-slate-200 text-slate-600">
+                  <span className="text-xs font-mono font-bold bg-slate-50 px-2.5 py-1 rounded-md border border-slate-200 text-slate-600 shrink-0">
                     Difficulty: {stream.difficultyLevel}
                   </span>
                 </div>
@@ -139,9 +215,77 @@ export default function ReportDisplay({
                     </p>
                   </div>
                 </div>
+
+                {/* AI Interactive Deep Elaboration (Feature 1) */}
+                <div className="mt-4 pt-3 border-t border-slate-100 space-y-2">
+                  <div className="flex items-center gap-1.5">
+                    <Sparkles className="w-3.5 h-3.5 text-indigo-600" />
+                    <span className="text-[10px] font-extrabold text-indigo-950 uppercase tracking-wider">Interactive Hobby-Stream Link Elaboration</span>
+                  </div>
+                  <p className="text-[10px] text-slate-500 leading-relaxed font-medium">
+                    Click on any of your personal hobbies to command the AI to analyze its deep, multi-dimensional academic connection to this stream:
+                  </p>
+                  <div className="flex flex-wrap gap-1.5">
+                    {studentHobbies && studentHobbies.length > 0 ? (
+                      studentHobbies.map((hobby, hidx) => {
+                        const isActive = activeElaborateStream === stream.streamName && activeElaborateHobby === hobby;
+                        return (
+                          <button
+                            key={hidx}
+                            onClick={() => handleTriggerElaborate(stream.streamName, hobby)}
+                            className={`text-[9px] font-bold px-2.5 py-1.5 rounded-lg border transition-all flex items-center gap-1.5 shadow-sm ${
+                              isActive
+                                ? "bg-indigo-600 text-white border-indigo-500 ring-1 ring-indigo-500/20"
+                                : "bg-indigo-50/60 hover:bg-indigo-50 text-indigo-700 hover:text-indigo-800 border-indigo-150"
+                            }`}
+                          >
+                            <span>✨ {hobby}</span>
+                          </button>
+                        );
+                      })
+                    ) : (
+                      <span className="text-[10px] text-slate-400 italic font-medium">No custom hobbies available. Setup some in the Student Background block!</span>
+                    )}
+                  </div>
+
+                  {/* Elaboration output container */}
+                  {activeElaborateStream === stream.streamName && activeElaborateHobby && (
+                    <div className="mt-3 p-4 bg-slate-50 border border-slate-200 rounded-xl space-y-3 relative overflow-hidden text-xs animate-in fade-in slide-in-from-top-2 duration-200">
+                      <button
+                        onClick={() => {
+                          setActiveElaborateStream(null);
+                          setActiveElaborateHobby(null);
+                          setElaborationResult(null);
+                        }}
+                        className="absolute top-2 right-2 p-1 text-slate-400 hover:text-slate-600 hover:bg-slate-200 rounded-lg transition-all"
+                        title="Close elaboration"
+                      >
+                        <X className="w-3.5 h-3.5" />
+                      </button>
+
+                      {isElaborating ? (
+                        <div className="space-y-2 py-1">
+                          <div className="flex items-center gap-2 text-indigo-600 font-extrabold font-mono text-[9px] uppercase tracking-wider animate-pulse">
+                            <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                            AI is tracing cognitive pathways for &quot;{activeElaborateHobby}&quot;...
+                          </div>
+                          <div className="h-2.5 bg-slate-200 rounded animate-pulse w-full" />
+                          <div className="h-2.5 bg-slate-200 rounded animate-pulse w-11/12" />
+                          <div className="h-2.5 bg-slate-200 rounded animate-pulse w-4/5" />
+                        </div>
+                      ) : elaborationError ? (
+                        <p className="text-xs text-rose-600 font-bold">Failed to elaborate: {elaborationError}</p>
+                      ) : elaborationResult ? (
+                        <div className="prose prose-sm prose-slate max-w-none text-slate-700">
+                          <div dangerouslySetInnerHTML={{ __html: elaborationResult }} />
+                        </div>
+                      ) : null}
+                    </div>
+                  )}
+                </div>
               </div>
 
-              <div className="mt-4 pt-3 border-t border-slate-100 flex flex-wrap gap-1.5">
+              <div className="pt-3 border-t border-slate-100 flex flex-wrap gap-1.5">
                 {stream.coreSubjects.map((sub, sidx) => (
                   <span key={sidx} className="text-[10px] font-semibold bg-slate-50 text-slate-600 px-2.5 py-1 rounded-md border border-slate-200">
                     {sub}
@@ -248,6 +392,182 @@ export default function ReportDisplay({
                 <span>🌐 {source.title}</span>
               </a>
             ))}
+          </div>
+        </div>
+      )}
+
+      {/* Dossier Document Modal Overlay (Feature 2) */}
+      {showDossierModal && (
+        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 z-[9999] overflow-y-auto">
+          <div className="bg-white rounded-3xl max-w-4xl w-full max-h-[90vh] flex flex-col shadow-2xl border border-slate-200 animate-in fade-in zoom-in-95 duration-200">
+            {/* Modal Header */}
+            <div className="p-5 border-b border-slate-200 bg-slate-50 flex justify-between items-center shrink-0">
+              <div className="flex items-center gap-2">
+                <FileText className="w-5 h-5 text-indigo-600" />
+                <h4 className="text-xs font-black text-slate-800 uppercase tracking-wider">
+                  Standardized Student Counseling Dossier
+                </h4>
+              </div>
+              <div className="flex items-center gap-3">
+                <button
+                  onClick={() => window.print()}
+                  className="bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs px-4 py-2 rounded-xl flex items-center gap-1.5 transition-all shadow-sm"
+                >
+                  <Printer className="w-3.5 h-3.5" />
+                  Print / Save PDF
+                </button>
+                <button
+                  onClick={() => setShowDossierModal(false)}
+                  className="text-slate-400 hover:text-slate-600 p-1.5 rounded-xl hover:bg-slate-200 transition-all"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+            </div>
+
+            {/* Printable Area */}
+            <div id="printable-dossier-root" className="flex-1 overflow-y-auto p-8 md:p-12 space-y-8 bg-white print:p-0 print:overflow-visible">
+              
+              {/* Report Header for print */}
+              <div className="border-b-2 border-slate-900 pb-6 flex justify-between items-start gap-4">
+                <div>
+                  <h1 className="text-xl font-black text-slate-900 tracking-tight uppercase">
+                    National Stream & Career Advisor
+                  </h1>
+                  <p className="text-[11px] text-slate-500 font-mono uppercase tracking-wider mt-1">
+                    Standardized Academic counseling dossier & stream evaluation
+                  </p>
+                  <p className="text-xs text-slate-500 mt-0.5">
+                    Evaluated under the standards of Class 10/11 Secondary Stream Mapping Regulations
+                  </p>
+                </div>
+                
+                {/* Official seal mock */}
+                <div className="text-center shrink-0 p-3 border border-slate-800 rounded-xl bg-slate-50 flex flex-col items-center justify-center">
+                  <div className="w-12 h-12 rounded-full bg-indigo-500 flex items-center justify-center text-white mb-1 shadow-md">
+                    <Award className="w-6 h-6 text-white" />
+                  </div>
+                  <span className="text-[8px] font-black tracking-widest text-slate-900 uppercase">OFFICIAL SEAL</span>
+                  <span className="text-[7px] text-indigo-600 font-bold font-mono">CAREERLY COGNITIVE CORE</span>
+                </div>
+              </div>
+
+              {/* Dossier Metadata Grid */}
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 bg-slate-50 p-4 rounded-2xl border border-slate-200 text-xs">
+                <div>
+                  <span className="text-[9px] uppercase font-bold text-slate-400 block mb-0.5">Student Name</span>
+                  <span className="font-extrabold text-slate-800 text-sm">{report.studentName}</span>
+                </div>
+                <div>
+                  <span className="text-[9px] uppercase font-bold text-slate-400 block mb-0.5">Assessment Date</span>
+                  <span className="font-extrabold text-slate-800">{new Date().toLocaleDateString("en-US", { year: 'numeric', month: 'long', day: 'numeric' })}</span>
+                </div>
+                <div>
+                  <span className="text-[9px] uppercase font-bold text-slate-400 block mb-0.5">Evaluation Core</span>
+                  <span className="font-extrabold text-slate-800 flex items-center gap-1">
+                    {report.isFallback ? "Offline Coprocessor" : "Gemini 3.5 Active"}
+                  </span>
+                </div>
+                <div>
+                  <span className="text-[9px] uppercase font-bold text-slate-400 block mb-0.5">Recommended Streams</span>
+                  <span className="font-extrabold text-indigo-600">{report.recommendedStreams.length} Primary Paths</span>
+                </div>
+              </div>
+
+              {/* Rationale overview */}
+              <div className="space-y-2">
+                <h3 className="text-xs font-bold text-slate-900 uppercase tracking-widest border-l-4 border-indigo-600 pl-2">
+                  Academic Overview & General Advice
+                </h3>
+                <p className="text-xs text-slate-600 leading-relaxed font-semibold">
+                  {report.generalAdvice}
+                </p>
+              </div>
+
+              {/* Recommended Streams mapped out */}
+              <div className="space-y-4">
+                <h3 className="text-xs font-bold text-slate-900 uppercase tracking-widest border-l-4 border-indigo-600 pl-2">
+                  Recommended Class 11 & 12 Academic Streams
+                </h3>
+                <div className="space-y-4">
+                  {report.recommendedStreams.map((stream, idx) => (
+                    <div key={idx} className="p-5 border border-slate-200 rounded-2xl space-y-3 bg-white shadow-sm break-inside-avoid">
+                      <div className="flex justify-between items-start gap-2">
+                        <div>
+                          <h4 className="text-sm font-bold text-slate-800">{stream.streamName}</h4>
+                          <div className="flex gap-2 mt-1">
+                            {stream.coreSubjects.map((sub, sidx) => (
+                              <span key={sidx} className="text-[9px] font-semibold bg-slate-50 text-slate-600 px-2 py-0.5 rounded border border-slate-200">
+                                {sub}
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+                        <div className="text-right shrink-0">
+                          <span className="text-xs font-mono font-bold text-indigo-600 block">{stream.matchPercentage}% Mapped</span>
+                          <span className="text-[9px] text-slate-400 font-bold uppercase block">Difficulty: {stream.difficultyLevel}</span>
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-[11px] text-slate-600 leading-relaxed">
+                        <div className="p-3 bg-slate-50 rounded-xl border border-slate-200">
+                          <span className="font-bold text-indigo-950 block mb-0.5">🎯 Hobby Alignment</span>
+                          {stream.hobbyConnection}
+                        </div>
+                        <div className="p-3 bg-slate-50 rounded-xl border border-slate-200">
+                          <span className="font-bold text-indigo-950 block mb-0.5">🌐 Browsing Alignment Evidence</span>
+                          {stream.browsingConnection}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Long Term Career paths */}
+              <div className="space-y-4 break-inside-avoid">
+                <h3 className="text-xs font-bold text-slate-900 uppercase tracking-widest border-l-4 border-indigo-600 pl-2">
+                  Futuristic Careers & Potential Professional Prospects
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  {report.longTermCareers.map((career, idx) => (
+                    <div key={idx} className="p-4 border border-slate-200 rounded-xl bg-slate-50 space-y-2 text-xs flex flex-col justify-between">
+                      <div>
+                        <div className="flex justify-between items-start gap-1">
+                          <h4 className="font-bold text-slate-800 leading-snug">{career.careerTitle}</h4>
+                        </div>
+                        <p className="text-[10px] text-slate-500 leading-relaxed mt-1 font-medium">{career.description}</p>
+                      </div>
+                      <div className="pt-2 border-t border-slate-200 space-y-1">
+                        <span className="text-[9px] text-slate-400 font-bold uppercase block">Market Valuation & Salary</span>
+                        <div className="flex justify-between items-center">
+                          <span className="font-mono font-bold text-emerald-700">{career.startingSalaryEstimate}</span>
+                        </div>
+                        <span className="text-[9px] text-slate-400 font-bold uppercase block pt-1">Required Core Skills</span>
+                        <div className="flex flex-wrap gap-1">
+                          {career.skillsRequired.slice(0, 3).map((s, sidx) => (
+                            <span key={sidx} className="bg-white text-[9px] text-slate-500 font-bold px-1 rounded border border-slate-200">{s}</span>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Legal & Educational Disclaimer */}
+              <div className="border-t border-slate-200 pt-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 text-[10px] text-slate-400 break-inside-avoid">
+                <div className="space-y-1">
+                  <p className="font-bold">National Career Mapping & Stream Advisor Core Version 1.5</p>
+                  <p>All assessments are powered by search-grounded contextual calculations and represent standard class alignment rules.</p>
+                </div>
+                <div className="shrink-0 text-right font-mono text-[9px] text-slate-500">
+                  <p>Dossier Reference ID: NSCA-2026-F{Math.floor(Math.random() * 90000) + 10000}</p>
+                  <p className="mt-0.5">Signature Authorized: CAREERLY DIGITAL KEY</p>
+                </div>
+              </div>
+
+            </div>
           </div>
         </div>
       )}

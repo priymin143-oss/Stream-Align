@@ -435,6 +435,7 @@ export default function App() {
                         setSelectedCareer(career);
                       }}
                       selectedCareerTitle={selectedCareer?.careerTitle}
+                      studentHobbies={selectedHobbies}
                     />
                   </div>
 
@@ -454,6 +455,8 @@ export default function App() {
                       career={selectedCareer}
                       completedMilestoneKeys={completedMilestonesByCareer[selectedCareer.careerTitle] || []}
                       onToggleMilestone={handleToggleMilestone}
+                      allCareers={report.longTermCareers}
+                      onSelectCareer={(c) => setSelectedCareer(c)}
                     />
                   ) : (
                     <div className="text-center py-10 text-slate-500 font-medium">

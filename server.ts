@@ -480,6 +480,147 @@ app.post("/api/career/analyze", async (req, res) => {
   }
 });
 
+// Fallback Elaboration Generator
+function generateFallbackElaboration(studentName: string, hobby: string, stream: string): string {
+  const h = hobby.toLowerCase();
+  const s = stream.toLowerCase();
+  
+  let link = "";
+  let skills: string[] = [];
+  let careers: string[] = [];
+  
+  if (h.includes("code") || h.includes("program") || h.includes("tech") || h.includes("game") || h.includes("robot") || h.includes("web") || h.includes("comput")) {
+    link = `Engaging in <strong>${hobby}</strong> nurtures a rigorous algorithmic mindset. It trains your brain in systematic problem-solving, breaking complex systems down into modular, testable units. This capability is directly aligned with the highly structural and formulaic nature of <strong>${stream}</strong>, where you'll solve advanced physics equations, construct chemical compounds, or design algorithms.`;
+    skills = [
+      "<strong>Computational Reasoning:</strong> Designing workflows, handling control states, and optimizing logical flows.",
+      "<strong>Systemic Debugging:</strong> Isolating variables and testing hypotheses methodically under pressure.",
+      "<strong>Creative Synthesis:</strong> Building virtual solutions starting with abstract code parameters."
+    ];
+    careers = [
+      "<strong>Computational Specialist:</strong> Engineering systems modeling, climate simulations, or algorithmic high-frequency finance.",
+      "<strong>Advanced Hardware Systems Analyst:</strong> Building cyber-physical robotics or autonomous aerial vehicles."
+    ];
+  } else if (h.includes("bio") || h.includes("nature") || h.includes("garden") || h.includes("health") || h.includes("doctor") || h.includes("animal") || h.includes("chem") || h.includes("science")) {
+    link = `Your passion for <strong>${hobby}</strong> reveals a high curiosity for organic structures and biological lifecycles. Studying these systems builds excellent observation skills, taxonomy mapping, and empirical investigation. This maps perfectly to <strong>${stream}</strong>, where cellular processes, ecological hierarchies, and biochemistry form the core syllabus.`;
+    skills = [
+      "<strong>Empirical Observation:</strong> Identifying subtle pattern variances in living or chemical systems.",
+      "<strong>Systemic Diagnostics:</strong> Categorizing biological structures and tracing molecular dependencies.",
+      "<strong>Ecological Empathy:</strong> Understanding how macro-environmental forces impact micro-cellular operations."
+    ];
+    careers = [
+      "<strong>Bio-Informatics Engineer:</strong> Utilizing advanced computing to decode genomic sequencing and model proteins.",
+      "<strong>Environmental Health Advisor:</strong> Creating sustainable urban biosystems or researching epidemical outbreaks."
+    ];
+  } else if (h.includes("finance") || h.includes("business") || h.includes("money") || h.includes("stock") || h.includes("invest") || h.includes("entrepreneur") || h.includes("trade") || h.includes("market") || h.includes("sell")) {
+    link = `Your dedication to <strong>${hobby}</strong> signals a sharp strategic awareness of resource distribution, game theory, and market dynamics. It practices calculating risk-reward margins and scaling operations. This forms the operational core of <strong>${stream}</strong>, where business models, microeconomics, and balance sheet auditing are explored in depth.`;
+    skills = [
+      "<strong>Quantitative Evaluation:</strong> Assessing asset valuations and tracking capital flows under fluctuating parameters.",
+      "<strong>Strategic Asset Allocation:</strong> Balancing immediate operational needs against long-term risk variables.",
+      "<strong>Negotiation & Communication:</strong> Synthesizing complex trade data into persuasive pitches."
+    ];
+    careers = [
+      "<strong>Fintech Venture Analyst:</strong> Investigating high-potential SaaS or digital payment startups for seed investment.",
+      "<strong>Quantitative Economist:</strong> Designing algorithmic models to predict micro-market trends."
+    ];
+  } else {
+    // Creative/Writing/Arts/Default
+    link = `Your active engagement in <strong>${hobby}</strong> highlights strong creative self-expression, contextual reading, and conceptual thinking. It demonstrates your ability to analyze abstract feelings or complex human interactions, which matches the critical writing, behavioral insights, and sociological frameworks of <strong>${stream}</strong>.`;
+    skills = [
+      "<strong>Conceptual Analysis:</strong> Interpreting complex underlying meanings and human behaviors.",
+      "<strong>Narrative Synthesis:</strong> Communicating detailed societal, historical, or psychological events persuasively.",
+      "<strong>Empathic Modeling:</strong> Anticipating how cultural or psychological factors shape community behaviors."
+    ];
+    careers = [
+      "<strong>Cognitive Experience Designer:</strong> Structuring behavioral parameters for conversational LLM interfaces.",
+      "<strong>Macro Policy Researcher:</strong> Consulting on governmental social reforms and behavioral economics projects."
+    ];
+  }
+  
+  return `
+    <p class="text-xs text-amber-700 bg-amber-50 p-2 rounded-lg border border-amber-200 mb-4 font-mono font-bold flex items-center gap-1">
+      ⚡ Offline Elaboration calculated by Local Academic Engine
+    </p>
+    <p class="mb-3 text-slate-700 leading-relaxed font-medium">Hi ${studentName}! Let's examine the deep connection between your active engagement in <strong>"${hobby}"</strong> and the academic requirements of <strong>"${stream}"</strong>:</p>
+    
+    <div class="mb-4">
+      <h5 class="text-xs font-bold text-slate-800 uppercase tracking-wider mb-1 flex items-center gap-1.5">1. Cognitive Connection:</h5>
+      <p class="text-xs text-slate-600 leading-relaxed font-medium">${link}</p>
+    </div>
+    
+    <div class="mb-4">
+      <h5 class="text-xs font-bold text-slate-800 uppercase tracking-wider mb-1 flex items-center gap-1.5">2. Transferable Skills You Are Developing:</h5>
+      <ul class="list-disc pl-5 space-y-1">
+        ${skills.map(s => `<li class="text-xs text-slate-600 leading-relaxed font-medium">${s}</li>`).join("")}
+      </ul>
+    </div>
+    
+    <div>
+      <h5 class="text-xs font-bold text-slate-800 uppercase tracking-wider mb-1 flex items-center gap-1.5">3. Future Cross-Disciplinary Careers:</h5>
+      <ul class="list-disc pl-5 space-y-1">
+        ${careers.map(c => `<li class="text-xs text-slate-600 leading-relaxed font-medium">${c}</li>`).join("")}
+      </ul>
+    </div>
+  `;
+}
+
+// Deep Elaboration of Hobby-Stream Connection Endpoint
+app.post("/api/career/elaborate", async (req, res) => {
+  const { studentName, hobby, stream } = req.body;
+  
+  if (!studentName || !hobby || !stream) {
+    return res.status(400).json({ error: "studentName, hobby, and stream are required" });
+  }
+
+  const apiKey = process.env.GEMINI_API_KEY;
+  const isKeyMissing = !apiKey || apiKey === "MY_GEMINI_API_KEY" || apiKey.trim() === "";
+
+  if (geminiQuotaExhausted || isKeyMissing) {
+    try {
+      const elaboration = generateFallbackElaboration(studentName, hobby, stream);
+      return res.json({ text: elaboration, isFallback: true });
+    } catch (fallbackError: any) {
+      console.error("Local fallback elaboration failed:", fallbackError);
+      return res.status(500).json({ error: "An error occurred during local academic elaboration" });
+    }
+  }
+
+  try {
+    const prompt = `
+      You are an expert Class 11 & 12 Academic Advisor and Career Coach.
+      
+      Please provide a detailed, inspiring, and professional analysis elaborating on the connection between:
+      - Student Name: ${studentName}
+      - Specific Hobby/Interest: "${hobby}"
+      - Recommended Academic Stream: "${stream}"
+      
+      In your analysis, you MUST provide:
+      1. COGNITIVE & SCIENTIFIC CONNECTION: Explain why engaging in "${hobby}" builds the specific logical frameworks, practical skills, or mental models required to succeed in "${stream}". Be precise and specific (e.g. if the hobby is coding and the stream is Science PCM, talk about algorithmic thinking, state machines, and mathematical abstraction).
+      2. TRANSFERABLE SKILLS DEVELOPED: Outline 3-4 key transferable professional skills developed through "${hobby}" (e.g., spatial reasoning, systemic diagnostics, creative synthesis, cognitive grit).
+      3. FUTURE CAREER TRAJECTORIES: Name 2 modern, high-value career paths where this unique hobby-stream combination makes them a highly sought-after multi-disciplinary talent.
+      
+      Format your response STRICTLY in clean, semantic HTML tags (only use <p>, <ul>, <li>, <strong>, and <em>). Do NOT include any markdown formatting, backticks, or outer HTML structure (no head, body, or doctype). Start directly with the text. Keep it professional, highly transparent, and incredibly encouraging for high schoolers.
+    `;
+
+    const response = await getAIClient().models.generateContent({
+      model: "gemini-3.5-flash",
+      contents: prompt,
+    });
+
+    res.json({
+      text: response.text || generateFallbackElaboration(studentName, hobby, stream),
+      isFallback: false
+    });
+  } catch (error: any) {
+    console.warn("Gemini Elaboration failed, using fallback:", error.message || error);
+    try {
+      const elaboration = generateFallbackElaboration(studentName, hobby, stream);
+      return res.json({ text: elaboration, isFallback: true });
+    } catch (fallbackError: any) {
+      res.status(500).json({ error: "An error occurred during academic elaboration" });
+    }
+  }
+});
+
 // Interactive Advisor Chatbot Endpoint
 app.post("/api/career/chat", async (req, res) => {
   const { profile, messages, lastReport } = req.body;
