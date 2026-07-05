@@ -192,10 +192,10 @@ export default function App() {
               <BrainCircuit className="w-5 h-5 text-white" />
             </div>
             <div>
-              <h1 className="text-base font-extrabold text-slate-900 tracking-tight flex flex-wrap items-center gap-2">
-                National Stream & Career Advisor
+              <h1 className="text-base font-extrabold text-slate-900 tracking-tight flex flex-wrap items-center gap-2 font-sans">
+                Careerly AI
                 <span className="text-[10px] font-mono font-bold bg-indigo-50 text-indigo-800 border border-indigo-200 px-2 py-0.5 rounded-full">
-                  Official Portal
+                  Stream & Career Portal
                 </span>
                 {report ? (
                   report.isFallback ? (
