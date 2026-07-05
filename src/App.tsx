@@ -219,7 +219,7 @@ export default function App() {
             </div>
             <div>
               <h1 className="text-base font-extrabold text-slate-900 tracking-tight flex flex-wrap items-center gap-2 font-sans">
-                CareerPath
+                Stream Align
                 <span className="text-[10px] font-mono font-bold bg-indigo-50 text-indigo-800 border border-indigo-200 px-2 py-0.5 rounded-full">
                   Stream & Career Portal
                 </span>
@@ -541,7 +541,7 @@ export default function App() {
 
       {/* Footer */}
       <footer className="bg-white border-t border-slate-200 py-8 mt-auto text-center text-xs text-slate-500 z-10">
-        <p className="font-semibold text-slate-600">© 2026 CareerPath. Powered by search-grounded Gemini 3.5 Flash.</p>
+        <p className="font-semibold text-slate-600">© 2026 Stream Align. Powered by search-grounded Gemini 3.5 Flash.</p>
         <p className="mt-1 text-slate-400">Standardized counseling & stream mapping utility for high school students tracking academic milestones transparently.</p>
       </footer>
     </div>

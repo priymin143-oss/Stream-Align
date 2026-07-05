@@ -590,7 +590,7 @@ export default function ReportDisplay({
               <div className="border-b-2 border-slate-900 pb-6 flex justify-between items-start gap-4">
                 <div>
                   <h1 className="text-xl font-black text-slate-900 tracking-tight uppercase">
-                    National Stream & Career Advisor
+                    Stream Align Advisor
                   </h1>
                   <p className="text-[11px] text-slate-500 font-mono uppercase tracking-wider mt-1">
                     Standardized Academic counseling dossier & stream evaluation
@@ -606,7 +606,7 @@ export default function ReportDisplay({
                     <Award className="w-6 h-6 text-white" />
                   </div>
                   <span className="text-[8px] font-black tracking-widest text-slate-900 uppercase">OFFICIAL SEAL</span>
-                  <span className="text-[7px] text-indigo-600 font-bold font-mono">CAREERLY COGNITIVE CORE</span>
+                  <span className="text-[7px] text-indigo-600 font-bold font-mono">STREAM ALIGN COGNITIVE CORE</span>
                 </div>
               </div>
 
@@ -716,12 +716,12 @@ export default function ReportDisplay({
               {/* Legal & Educational Disclaimer */}
               <div className="border-t border-slate-200 pt-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 text-[10px] text-slate-400 break-inside-avoid">
                 <div className="space-y-1">
-                  <p className="font-bold">National Career Mapping & Stream Advisor Core Version 1.5</p>
+                  <p className="font-bold">Stream Align Advisor Core Version 1.5</p>
                   <p>All assessments are powered by search-grounded contextual calculations and represent standard class alignment rules.</p>
                 </div>
                 <div className="shrink-0 text-right font-mono text-[9px] text-slate-500">
                   <p>Dossier Reference ID: NSCA-2026-F{Math.floor(Math.random() * 90000) + 10000}</p>
-                  <p className="mt-0.5">Signature Authorized: CAREERLY DIGITAL KEY</p>
+                  <p className="mt-0.5">Signature Authorized: STREAM ALIGN DIGITAL KEY</p>
                 </div>
               </div>
 

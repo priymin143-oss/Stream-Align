@@ -24,7 +24,7 @@ export default function CareerAdvisorChatbot({
         {
           id: "welcome-msg",
           role: "model",
-          text: `Hi **${profile.name || "there"}**! I am **CareerPath**, your premium Academic Advisor. 
+          text: `Hi **${profile.name || "there"}**! I am **Stream Align**, your premium Academic Advisor. 
 
 I've analyzed your hobbies and your campus Wi-Fi browsing patterns. Feel free to ask me questions like:
 * *"Why did you recommend this stream based on my hobby of ${profile.hobbies[0] || "coding"}?"*
@@ -157,7 +157,7 @@ I've analyzed your hobbies and your campus Wi-Fi browsing patterns. Feel free to
           </div>
           <div>
             <h3 className="text-xs font-bold text-slate-800 uppercase tracking-wider flex items-center gap-1.5">
-              Careerly Counselor Bot
+              Stream Align Bot
               <Sparkles className="w-3 h-3 text-amber-500 fill-amber-500" />
             </h3>
             <span className="text-[10px] text-emerald-700 font-bold">● Active Trend Grounding Enabled</span>

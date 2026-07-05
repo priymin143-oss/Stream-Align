@@ -1,6 +1,6 @@
 {
-  "name": "CareerPath",
-  "description": "CareerPath: A premium, formal career counseling and stream recommendation portal for Class 11 & 12 high school students.",
+  "name": "Stream Align",
+  "description": "Stream Align: A premium, formal career counseling and stream recommendation portal for Class 11 & 12 high school students.",
   "requestFramePermissions": [],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }

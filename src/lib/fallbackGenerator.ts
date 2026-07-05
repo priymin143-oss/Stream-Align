@@ -298,7 +298,7 @@ export function generateLocalReport(
     studentName,
     recommendedStreams,
     longTermCareers,
-    generalAdvice: `Congratulations on compiling your highly detailed profile, ${studentName}! Based on your academic grades ("${marks || "unspecified"}"), existing skill count (${(technicalSkills || []).length + (softSkills || []).length} total), Wi-Fi footprints, and core hobbies, you possess a highly versatile cognitive style. CareerPath's Local Coprocessor has automatically processed your profile parameters to bypass network constraints and ensure instant personalized stream alignment.`,
+    generalAdvice: `Congratulations on compiling your highly detailed profile, ${studentName}! Based on your academic grades ("${marks || "unspecified"}"), existing skill count (${(technicalSkills || []).length + (softSkills || []).length} total), Wi-Fi footprints, and core hobbies, you possess a highly versatile cognitive style. Stream Align's Local Coprocessor has automatically processed your profile parameters to bypass network constraints and ensure instant personalized stream alignment.`,
     marketInsights: `Our dynamic 2026/2027 mapping shows exceptional opportunities in dual-capability sectors: AI systems architecture, quantitative finance, medical biotechnology, and cognitive interaction design. Bridging your identified skill gaps via the suggested online programs will yield exceptional starting premiums.`,
     groundingSources: [
       { title: "National Educational Policy (NEP) Career Guidelines", url: "https://www.education.gov.in/" },
@@ -386,9 +386,9 @@ Here are the standard starting and mid-career expectations for these pathways:
     *   *Starting:* ₹8 - 11 Lakhs / annum ($85k+ internationally)
     *   *Mid-Career (5-8 years):* ₹18 - 30 Lakhs / annum
 
-CareerPath maps high-paying, future-proof positions where tech demand is rising exponentially! Which of these triggers your passion most?`;
+Stream Align maps high-paying, future-proof positions where tech demand is rising exponentially! Which of these triggers your passion most?`;
   } else {
-    return `Hi **${profile.name || "there"}**! I am **CareerPath**, your premium Academic Counselor.
+    return `Hi **${profile.name || "there"}**! I am **Stream Align**, your premium Academic Counselor.
 
 I can help you deep-dive into standard high school streams (PCM, PCB, Commerce, Humanities), futuristic careers (AI architect, Gene editor, Quantitative Finance, UX cognitive science), entrance exams, or custom preparation timelines.
 

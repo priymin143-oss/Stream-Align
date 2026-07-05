@@ -443,7 +443,7 @@ Here is how we translate these hobbies directly into professional strengths:
 
 How do you feel your hobbies connect with the streams we recommended? Let me know if any specific hobby feels like a career you want to pursue!`;
   } else {
-    return `Hello **${profile.name || "Student"}**! I am Careerly, your AI Career Coprocessor. 
+    return `Hello **${profile.name || "Student"}**! I am Stream Align, your AI Career Coprocessor. 
 
 I'm currently running in our local high-performance mode because the global Gemini API has temporarily reached its high-load limit. I am fully capable of answering all your stream and college questions!
 
@@ -621,7 +621,7 @@ app.post("/api/career/analyze", async (req, res) => {
 
     if (isQuotaError) {
       geminiQuotaExhausted = true;
-      console.log("[Careerly Backend] Gemini API quota reached. Automatically switching to high-fidelity Local Coprocessor fallback.");
+      console.log("[Stream Align Backend] Gemini API quota reached. Automatically switching to high-fidelity Local Coprocessor fallback.");
     } else {
       console.warn("Gemini API Analyze call failed, running high-fidelity local coprocessor fallback:", error.message || error);
     }
@@ -819,7 +819,7 @@ app.post("/api/career/chat", async (req, res) => {
 
   try {
     const systemInstruction = `
-      You are "Careerly", a warm, inspiring, and professional school academic advisor and career path counselor.
+      You are "Stream Align", a warm, inspiring, and professional school academic advisor and career path counselor.
       You are chatting with high school student ${profile.name || "Student"}.
       
       Here is the student's background context to reference during the chat:
@@ -882,7 +882,7 @@ app.post("/api/career/chat", async (req, res) => {
 
     if (isQuotaError) {
       geminiQuotaExhausted = true;
-      console.log("[Careerly Backend] Gemini API quota reached in chat. Automatically switching to high-fidelity Local Coprocessor fallback.");
+      console.log("[Stream Align Backend] Gemini API quota reached in chat. Automatically switching to high-fidelity Local Coprocessor fallback.");
     } else {
       console.warn("Gemini API Chat call failed, running high-fidelity local coprocessor fallback:", error.message || error);
     }
@@ -907,10 +907,10 @@ app.post("/api/career/chat", async (req, res) => {
 
 // Mount Vite middleware for development
 async function startServer() {
-  console.log("[Careerly Backend] Starting server...");
-  console.log(`[Careerly Backend] process.cwd(): ${process.cwd()}`);
-  console.log(`[Careerly Backend] _dirname: ${_dirname}`);
-  console.log(`[Careerly Backend] NODE_ENV: ${process.env.NODE_ENV}`);
+  console.log("[Stream Align Backend] Starting server...");
+  console.log(`[Stream Align Backend] process.cwd(): ${process.cwd()}`);
+  console.log(`[Stream Align Backend] _dirname: ${_dirname}`);
+  console.log(`[Stream Align Backend] NODE_ENV: ${process.env.NODE_ENV}`);
 
   // Determine distPath dynamically with multiple fallbacks
   let distPath = path.join(process.cwd(), "dist");
@@ -926,7 +926,7 @@ async function startServer() {
   for (const p of pathsToTry) {
     const indexPath = path.join(p, "index.html");
     const exists = fs.existsSync(indexPath);
-    console.log(`[Careerly Backend] Checking path: ${p} (index.html exists: ${exists})`);
+    console.log(`[Stream Align Backend] Checking path: ${p} (index.html exists: ${exists})`);
     if (exists && p !== process.cwd()) { // Prefer a dist path over root index.html if possible
       distPath = p;
       foundPath = true;
@@ -936,36 +936,36 @@ async function startServer() {
 
   // Fallback if no built index.html was found but one exists in cwd
   if (!foundPath && fs.existsSync(path.join(process.cwd(), "index.html"))) {
-    console.log(`[Careerly Backend] No compiled index.html found. Falling back to root workspace index.html.`);
+    console.log(`[Stream Align Backend] No compiled index.html found. Falling back to root workspace index.html.`);
     distPath = process.cwd();
   }
 
-  console.log(`[Careerly Backend] Resolved distPath to: ${distPath}`);
+  console.log(`[Stream Align Backend] Resolved distPath to: ${distPath}`);
 
   // In development mode (NODE_ENV !== "production" and not running the bundled server in dist),
   // we want to use Vite dev server middleware to support hot module replacement and live previews.
   const isProduction = process.env.NODE_ENV === "production";
 
   if (!isProduction) {
-    console.log("[Careerly Backend] Running in DEVELOPMENT mode. Initializing Vite dev server middleware...");
+    console.log("[Stream Align Backend] Running in DEVELOPMENT mode. Initializing Vite dev server middleware...");
     const vite = await createViteServer({
       server: { middlewareMode: true },
       appType: "spa",
     });
     app.use(vite.middlewares);
   } else {
-    console.log("[Careerly Backend] Running in PRODUCTION mode. Serving static assets.");
+    console.log("[Stream Align Backend] Running in PRODUCTION mode. Serving static assets.");
     app.use(express.static(distPath));
     app.get("*", (req, res) => {
       const finalIndexPath = path.join(distPath, "index.html");
       if (fs.existsSync(finalIndexPath)) {
         res.sendFile(finalIndexPath);
       } else {
-        console.error(`[Careerly Backend] CRITICAL: index.html not found at ${finalIndexPath}!`);
+        console.error(`[Stream Align Backend] CRITICAL: index.html not found at ${finalIndexPath}!`);
         // Emergency fallback to root index.html if it exists
         const emergencyPath = path.join(process.cwd(), "index.html");
         if (fs.existsSync(emergencyPath)) {
-          console.warn(`[Careerly Backend] Serving emergency fallback index.html from root: ${emergencyPath}`);
+          console.warn(`[Stream Align Backend] Serving emergency fallback index.html from root: ${emergencyPath}`);
           res.sendFile(emergencyPath);
         } else {
           res.status(504).send("Error: Application frontend assets not found. Please compile the applet.");
@@ -975,7 +975,7 @@ async function startServer() {
   }
 
   app.listen(PORT, "0.0.0.0", () => {
-    console.log(`[Careerly Backend] Running on http://localhost:${PORT}`);
+    console.log(`[Stream Align Backend] Running on http://localhost:${PORT}`);
   });
 }
 
