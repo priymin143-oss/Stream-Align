@@ -7,7 +7,11 @@ import StudentProfileEditor from "./components/StudentProfileEditor";
 import ReportDisplay from "./components/ReportDisplay";
 import ProgressionDashboard from "./components/ProgressionDashboard";
 import CareerAdvisorChatbot from "./components/CareerAdvisorChatbot";
-import { Compass, Sparkles, BookOpen, BrainCircuit, UserCheck, ArrowRight, Loader2, RefreshCw, Star } from "lucide-react";
+import ShiningWaveLogo from "./components/ShiningWaveLogo";
+import SkillGapAnalysis from "./components/SkillGapAnalysis";
+import JobMarketAlerts from "./components/JobMarketAlerts";
+import GamificationDashboard from "./components/GamificationDashboard";
+import { Compass, Sparkles, BookOpen, BrainCircuit, UserCheck, ArrowRight, Loader2, RefreshCw, Star, Award, Shield, Users, Mail, Bell, Flame } from "lucide-react";
 import { generateLocalReport } from "./lib/fallbackGenerator";
 
 export default function App() {
@@ -67,7 +71,51 @@ export default function App() {
   }, [selectedHobbies, browsingLogs]);
   
   // Mode selection
-  const [activeTab, setActiveTab] = useState<"counselor" | "milestones">("counselor");
+  const [activeTab, setActiveTab] = useState<"counselor" | "milestones" | "gap-analysis" | "alerts" | "gamification">("counselor");
+
+  // Gamification States
+  const [points, setPoints] = useState<number>(300);
+  const [pointHistory, setPointHistory] = useState<any[]>([
+    { id: "h-1", points: 100, description: "Completed initial setup profile configuration", timestamp: new Date(Date.now() - 3600000).toISOString() },
+    { id: "h-2", points: 100, description: "Configured hobbies & interests database", timestamp: new Date(Date.now() - 1800000).toISOString() },
+    { id: "h-3", points: 100, description: "Loaded classroom marks & academic grades", timestamp: new Date(Date.now() - 600000).toISOString() },
+  ]);
+
+  const [badges, setBadges] = useState<any[]>([
+    { key: "exploration", title: "Exploration Master", description: "Unlock by exploring at least 3 career paths or stream recommendations.", icon: <Compass className="w-5 h-5 text-indigo-500" />, color: "bg-indigo-50/70 border-indigo-200 text-indigo-850", unlocked: false, req: "Explore 3 Career paths" },
+    { key: "skill_builder", title: "Skill Builder", description: "Audit your competencies by running a detailed AI Skill Gap Analysis.", icon: <Sparkles className="w-5 h-5 text-amber-500" />, color: "bg-amber-50/70 border-amber-200 text-amber-850", unlocked: false, req: "Run 1 Skill Gap Analysis" },
+    { key: "milestone_crusher", title: "Milestone Crusher", description: "Complete educational or professional milestones on your career roadmaps.", icon: <Award className="w-5 h-5 text-emerald-500" />, color: "bg-emerald-50/70 border-emerald-200 text-emerald-850", unlocked: false, req: "Toggle 1 milestone completion" },
+    { key: "insight_seeker", title: "Insight Seeker", description: "Interact with the AI Counseling chatbot to ask persistent career questions.", icon: <Star className="w-5 h-5 text-purple-500" />, color: "bg-purple-50/70 border-purple-200 text-purple-850", unlocked: false, req: "Ask questions to Counselor chatbot" },
+    { key: "trend_tracker", title: "Trend Tracker", description: "Subscribe or scan live news alerts to monitor actual high-school trends.", icon: <Shield className="w-5 h-5 text-sky-500" />, color: "bg-sky-50/70 border-sky-200 text-sky-850", unlocked: false, req: "Monitor live job streams or Subscribe" }
+  ]);
+
+  const handleAwardPoints = (pointsToAdd: number, description: string, badgeKey?: string) => {
+    setPoints((prev) => prev + pointsToAdd);
+    setPointHistory((prev) => {
+      // Avoid adding duplicate log entries for identical actions if needed, but history is clean
+      const id = `h-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+      return [
+        {
+          id,
+          points: pointsToAdd,
+          description,
+          timestamp: new Date().toISOString()
+        },
+        ...prev
+      ];
+    });
+
+    if (badgeKey) {
+      setBadges((prev) =>
+        prev.map((badge) => {
+          if (badge.key === badgeKey && !badge.unlocked) {
+            return { ...badge, unlocked: true };
+          }
+          return badge;
+        })
+      );
+    }
+  };
 
   // Load preset persona helper
   const handleSelectPersona = (persona: StudentPersona) => {
@@ -155,6 +203,9 @@ export default function App() {
       if (data.longTermCareers && data.longTermCareers.length > 0) {
         setSelectedCareer(data.longTermCareers[0]);
       }
+      
+      // Award gamification points
+      handleAwardPoints(300, "Successfully completed stream & career evaluation using search-grounded Gemini AI", "exploration");
     } catch (error: any) {
       console.warn("Backend API unavailable or failed. Using high-performance Local AI Coprocessor fallback.", error);
       
@@ -176,6 +227,9 @@ export default function App() {
       if (localData.longTermCareers && localData.longTermCareers.length > 0) {
         setSelectedCareer(localData.longTermCareers[0]);
       }
+
+      // Award fallback gamification points
+      handleAwardPoints(200, "Successfully completed stream & career evaluation using Offline Local Coprocessor", "exploration");
     } finally {
       setIsLoading(false);
     }
@@ -185,9 +239,13 @@ export default function App() {
   const handleToggleMilestone = (milestoneTitle: string) => {
     if (!selectedCareer) return;
     const careerKey = selectedCareer.careerTitle;
+    let isNowCompleted = false;
+
     setCompletedMilestonesByCareer((prev) => {
       const currentList = prev[careerKey] || [];
-      const updatedList = currentList.includes(milestoneTitle)
+      const isCompleted = currentList.includes(milestoneTitle);
+      isNowCompleted = !isCompleted;
+      const updatedList = isCompleted
         ? currentList.filter((m) => m !== milestoneTitle)
         : [...currentList, milestoneTitle];
       return {
@@ -195,6 +253,10 @@ export default function App() {
         [careerKey]: updatedList
       };
     });
+
+    if (isNowCompleted) {
+      handleAwardPoints(100, `Completed progression milestone: ${milestoneTitle}`, "milestone_crusher");
+    }
   };
 
   return (
@@ -219,7 +281,7 @@ export default function App() {
             </div>
             <div>
               <h1 className="text-base font-extrabold text-slate-900 tracking-tight flex flex-wrap items-center gap-2 font-sans">
-                Stream Align
+                <ShiningWaveLogo text="Stream Align" />
                 <span className="text-[10px] font-mono font-bold bg-indigo-50 text-indigo-800 border border-indigo-200 px-2 py-0.5 rounded-full">
                   Stream & Career Portal
                 </span>
@@ -239,30 +301,81 @@ export default function App() {
             </div>
           </div>
 
-          <div className="flex items-center gap-1 bg-slate-100 p-1 rounded-xl border border-slate-200">
-            <button
-              onClick={() => setActiveTab("counselor")}
-              className={`text-xs font-bold px-4 py-2 rounded-lg transition-all ${
-                activeTab === "counselor"
-                  ? "bg-white text-indigo-700 border border-slate-200 shadow-sm"
-                  : "text-slate-500 hover:text-slate-800"
-              }`}
+          <div className="flex flex-wrap items-center gap-3">
+            {/* XP Points Summary Header Widget */}
+            <div
+              onClick={() => setActiveTab("gamification")}
+              className="flex items-center gap-2 bg-indigo-50 border border-indigo-200 hover:bg-indigo-100/70 p-2 rounded-xl cursor-pointer transition-all shadow-sm"
+              title="Click to view Gamification Rewards & Badges"
             >
-              Counselor Report & Chat
-            </button>
-            <button
-              onClick={() => setActiveTab("milestones")}
-              disabled={!selectedCareer}
-              className={`text-xs font-bold px-4 py-2 rounded-lg transition-all ${
-                !selectedCareer ? "opacity-50 cursor-not-allowed" : ""
-              } ${
-                activeTab === "milestones"
-                  ? "bg-white text-indigo-700 border border-slate-200 shadow-sm"
-                  : "text-slate-500 hover:text-slate-800"
-              }`}
-            >
-              Progression Dashboard
-            </button>
+              <Flame className="w-4 h-4 text-amber-500 animate-pulse shrink-0" />
+              <span className="text-xs font-black text-indigo-950 font-mono leading-none">{points} XP</span>
+              <span className="text-[9px] font-extrabold text-indigo-700 bg-white border border-indigo-100 rounded px-1 py-0.5 uppercase tracking-wide shrink-0">
+                Level {points < 200 ? 1 : points < 500 ? 2 : points < 1000 ? 3 : 4}
+              </span>
+            </div>
+
+            <div className="flex flex-wrap items-center gap-1 bg-slate-100 p-1 rounded-xl border border-slate-200">
+              <button
+                onClick={() => setActiveTab("counselor")}
+                className={`text-xs font-bold px-3.5 py-2 rounded-lg transition-all ${
+                  activeTab === "counselor"
+                    ? "bg-white text-indigo-700 border border-slate-200 shadow-sm"
+                    : "text-slate-500 hover:text-slate-800"
+                }`}
+              >
+                Counselor Report & Chat
+              </button>
+              <button
+                onClick={() => setActiveTab("milestones")}
+                disabled={!selectedCareer}
+                className={`text-xs font-bold px-3.5 py-2 rounded-lg transition-all ${
+                  !selectedCareer ? "opacity-50 cursor-not-allowed" : ""
+                } ${
+                  activeTab === "milestones"
+                    ? "bg-white text-indigo-700 border border-slate-200 shadow-sm"
+                    : "text-slate-500 hover:text-slate-800"
+                }`}
+              >
+                Progression Dashboard
+              </button>
+              <button
+                onClick={() => setActiveTab("gap-analysis")}
+                disabled={!selectedCareer}
+                className={`text-xs font-bold px-3.5 py-2 rounded-lg transition-all ${
+                  !selectedCareer ? "opacity-50 cursor-not-allowed" : ""
+                } ${
+                  activeTab === "gap-analysis"
+                    ? "bg-white text-indigo-700 border border-slate-200 shadow-sm"
+                    : "text-slate-500 hover:text-slate-800"
+                }`}
+              >
+                AI Skill Gaps
+              </button>
+              <button
+                onClick={() => setActiveTab("alerts")}
+                disabled={!selectedCareer}
+                className={`text-xs font-bold px-3.5 py-2 rounded-lg transition-all ${
+                  !selectedCareer ? "opacity-50 cursor-not-allowed" : ""
+                } ${
+                  activeTab === "alerts"
+                    ? "bg-white text-indigo-700 border border-slate-200 shadow-sm"
+                    : "text-slate-500 hover:text-slate-800"
+                }`}
+              >
+                Market Alerts
+              </button>
+              <button
+                onClick={() => setActiveTab("gamification")}
+                className={`text-xs font-bold px-3.5 py-2 rounded-lg transition-all ${
+                  activeTab === "gamification"
+                    ? "bg-white text-indigo-700 border border-slate-200 shadow-sm"
+                    : "text-slate-500 hover:text-slate-800"
+                }`}
+              >
+                🏆 Badges & Leaderboard
+              </button>
+            </div>
           </div>
         </div>
       </header>
@@ -513,10 +626,11 @@ export default function App() {
                         educationQualifications
                       }}
                       lastReport={report}
+                      onMessageSent={() => handleAwardPoints(30, "Consulted with AI Advisor chatbot", "insight_seeker")}
                     />
                   </div>
                 </div>
-              ) : (
+              ) : activeTab === "milestones" ? (
                 /* Focused Progression Milestones tracker */
                 <div>
                   {selectedCareer ? (
@@ -533,6 +647,46 @@ export default function App() {
                     </div>
                   )}
                 </div>
+              ) : activeTab === "gap-analysis" ? (
+                /* AI-powered Skill Gap Analysis feature */
+                <SkillGapAnalysis
+                  profile={{
+                    name: studentName,
+                    hobbies: selectedHobbies,
+                    browsingLogs,
+                    marks,
+                    technicalSkills,
+                    softSkills,
+                    workExperience,
+                    educationQualifications
+                  }}
+                  careers={report.longTermCareers}
+                  onAwardPoints={handleAwardPoints}
+                />
+              ) : activeTab === "alerts" ? (
+                /* Real-time Job Market Alerts feature */
+                <JobMarketAlerts
+                  profile={{
+                    name: studentName,
+                    hobbies: selectedHobbies,
+                    browsingLogs,
+                    marks,
+                    technicalSkills,
+                    softSkills,
+                    workExperience,
+                    educationQualifications
+                  }}
+                  careerPaths={report.longTermCareers.map((c) => c.careerTitle)}
+                  onAwardPoints={handleAwardPoints}
+                />
+              ) : (
+                /* Gamification leaderboard & badges feature */
+                <GamificationDashboard
+                  studentName={studentName}
+                  points={points}
+                  pointHistory={pointHistory}
+                  badges={badges}
+                />
               )}
             </div>
           )}

@@ -7,3 +7,45 @@
   --animate-spin-slow: spin 12s linear infinite;
   --animate-pulse-slow: pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
+
+@keyframes wave {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+}
+
+@keyframes textShine {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.wave-letter {
+  display: inline-block;
+  animation: wave 2s ease-in-out infinite;
+}
+
+.shining-wave-text {
+  background: linear-gradient(
+    135deg,
+    #6366f1 10%,
+    #ec4899 30%,
+    #8b5cf6 50%,
+    #3b82f6 70%,
+    #6366f1 90%
+  );
+  background-size: 300% 300%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: textShine 6s ease-in-out infinite;
+}

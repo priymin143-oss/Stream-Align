@@ -6,11 +6,13 @@ import { generateLocalChatResponse } from "../lib/fallbackGenerator";
 interface CareerAdvisorChatbotProps {
   profile: StudentProfile;
   lastReport: AnalysisReport | null;
+  onMessageSent?: () => void;
 }
 
 export default function CareerAdvisorChatbot({
   profile,
   lastReport,
+  onMessageSent,
 }: CareerAdvisorChatbotProps) {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [inputText, setInputText] = useState("");
@@ -60,6 +62,10 @@ I've analyzed your hobbies and your campus Wi-Fi browsing patterns. Feel free to
     const updatedMessages = [...messages, userMessage];
     setMessages(updatedMessages);
     setIsLoading(true);
+
+    if (onMessageSent) {
+      onMessageSent();
+    }
 
     try {
       const response = await fetch("/api/career/chat", {
