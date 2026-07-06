@@ -12,7 +12,7 @@ import SkillGapAnalysis from "./components/SkillGapAnalysis";
 import JobMarketAlerts from "./components/JobMarketAlerts";
 import GamificationDashboard from "./components/GamificationDashboard";
 import { Compass, Sparkles, BookOpen, BrainCircuit, UserCheck, ArrowRight, Loader2, RefreshCw, Star, Award, Shield, Users, Mail, Bell, Flame } from "lucide-react";
-import { generateLocalReport } from "./lib/fallbackGenerator";
+import { generateLocalReport, calculateWeightedScore } from "./lib/fallbackGenerator";
 
 export default function App() {
   // Input states
@@ -34,41 +34,15 @@ export default function App() {
   const [completedMilestonesByCareer, setCompletedMilestonesByCareer] = useState<Record<string, string[]>>({});
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  // Instant simulated calculations
+  // Instant simulated calculations using weighted 51% marks and 49% hobbies formula
   const simulatedAffinity = React.useMemo(() => {
-    let pcm = 45;
-    let pcb = 40;
-    let commerce = 40;
-    let humanities = 40;
-
-    // Weight hobbies
-    selectedHobbies.forEach((hobby) => {
-      const h = hobby.toLowerCase();
-      if (h.includes("code") || h.includes("robot") || h.includes("game") || h.includes("math") || h.includes("tech") || h.includes("program")) pcm += 15;
-      if (h.includes("bio") || h.includes("garden") || h.includes("chem") || h.includes("nature") || h.includes("health") || h.includes("doctor")) pcb += 15;
-      if (h.includes("trade") || h.includes("finance") || h.includes("business") || h.includes("money") || h.includes("invest") || h.includes("entrepreneur")) commerce += 15;
-      if (h.includes("read") || h.includes("psych") || h.includes("art") || h.includes("paint") || h.includes("social") || h.includes("writ") || h.includes("history")) humanities += 15;
-    });
-
-    // Weight browsing history logs
-    browsingLogs.forEach((log) => {
-      const cat = log.category.toLowerCase();
-      const title = log.title.toLowerCase();
-      
-      if (cat.includes("tech") || cat.includes("computer") || title.includes("code") || title.includes("math") || title.includes("programming")) pcm += 8;
-      if (cat.includes("science") || cat.includes("biology") || title.includes("bio") || title.includes("gene") || title.includes("earth") || title.includes("chemistry")) pcb += 8;
-      if (cat.includes("business") || cat.includes("finance") || cat.includes("economics") || title.includes("market") || title.includes("startup") || title.includes("stock")) commerce += 8;
-      if (cat.includes("arts") || cat.includes("humanities") || cat.includes("social") || title.includes("history") || title.includes("mind") || title.includes("design") || title.includes("literature")) humanities += 8;
-    });
-
-    // Cap at 99
     return {
-      pcm: Math.min(pcm, 99),
-      pcb: Math.min(pcb, 99),
-      commerce: Math.min(commerce, 99),
-      humanities: Math.min(humanities, 99),
+      pcm: calculateWeightedScore(marks, selectedHobbies, "PCM"),
+      pcb: calculateWeightedScore(marks, selectedHobbies, "PCB"),
+      commerce: calculateWeightedScore(marks, selectedHobbies, "Commerce"),
+      humanities: calculateWeightedScore(marks, selectedHobbies, "Humanities"),
     };
-  }, [selectedHobbies, browsingLogs]);
+  }, [selectedHobbies, marks]);
   
   // Mode selection
   const [activeTab, setActiveTab] = useState<"counselor" | "milestones" | "gap-analysis" | "alerts" | "gamification">("counselor");

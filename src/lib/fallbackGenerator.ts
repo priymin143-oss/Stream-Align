@@ -208,6 +208,110 @@ export function generateFallbackCourseSuggestions(
   });
 }
 
+export function calculateWeightedScore(
+  marksStr: string,
+  hobbies: string[],
+  stream: "PCM" | "PCB" | "Commerce" | "Humanities"
+): number {
+  // --- 1. Calculate Marks Score (51% weight) ---
+  const cleanedMarks = (marksStr || "").toLowerCase();
+  
+  // Define keywords for each stream
+  const streamKeywords: Record<string, string[]> = {
+    PCM: ["math", "physics", "chemistry", "computer", "science", "coding", "programming"],
+    PCB: ["biology", "chemistry", "environmental", "science", "physics", "health", "medical"],
+    Commerce: ["math", "financial", "finance", "economics", "account", "business", "social"],
+    Humanities: ["english", "literature", "history", "civics", "social", "art", "psychology", "sociology", "political"]
+  };
+
+  const keywords = streamKeywords[stream] || [];
+  
+  // Extract all <subject>: <score> or <subject> <score> pairs
+  const subjectScores: { subject: string; score: number }[] = [];
+  const regex = /([a-z0-9\s]+?)\s*:\s*(\d+)/gi;
+  let match;
+  while ((match = regex.exec(cleanedMarks)) !== null) {
+    const subj = match[1].trim().toLowerCase();
+    const score = parseInt(match[2], 10);
+    if (!isNaN(score)) {
+      subjectScores.push({ subject: subj, score });
+    }
+  }
+
+  // Also look for simple standalone numbers if no structured pairs were found
+  const allNumbers: number[] = [];
+  const numRegex = /(\d+)/g;
+  let numMatch;
+  while ((numMatch = numRegex.exec(cleanedMarks)) !== null) {
+    const val = parseInt(numMatch[1], 10);
+    if (!isNaN(val) && val <= 100) {
+      allNumbers.push(val);
+    }
+  }
+
+  let marksScore = 75; // Default baseline if nothing found
+
+  if (subjectScores.length > 0) {
+    // Find subject scores matching keywords
+    const matchingScores = subjectScores
+      .filter(item => keywords.some(kw => item.subject.includes(kw)))
+      .map(item => item.score);
+
+    if (matchingScores.length > 0) {
+      // Average of matching subject scores
+      marksScore = matchingScores.reduce((sum, val) => sum + val, 0) / matchingScores.length;
+    } else {
+      // Fallback to average of all extracted subject scores
+      marksScore = subjectScores.reduce((sum, item) => sum + item.score, 0) / subjectScores.length;
+    }
+  } else if (allNumbers.length > 0) {
+    // If there are just numbers, average them
+    marksScore = allNumbers.reduce((sum, val) => sum + val, 0) / allNumbers.length;
+  }
+
+  // Enforce score range
+  marksScore = Math.min(Math.max(marksScore, 40), 100);
+
+  // --- 2. Calculate Hobby Score (49% weight) ---
+  const hobbyKeywords: Record<string, string[]> = {
+    PCM: ["code", "program", "robot", "math", "tech", "game", "comput", "electronic", "engineer", "software"],
+    PCB: ["bio", "chem", "nature", "health", "doctor", "med", "clinic", "biology", "science", "garden", "anatomy", "hospital"],
+    Commerce: ["finance", "business", "money", "stock", "invest", "market", "trade", "economics", "entrepreneur", "account", "venture"],
+    Humanities: ["art", "design", "writ", "read", "paint", "psych", "history", "music", "book", "philosoph", "social", "draw", "sketch", "literature", "creative"]
+  };
+
+  const hKeywords = hobbyKeywords[stream] || [];
+  const hList = (hobbies || []).map(h => String(h).toLowerCase());
+  
+  let matchedHobbiesCount = 0;
+  hList.forEach(hobby => {
+    if (hKeywords.some(kw => hobby.includes(kw))) {
+      matchedHobbiesCount++;
+    }
+  });
+
+  // Scale: 0 matches -> 50, 1 match -> 75, 2+ matches -> 95-100
+  let hobbyScore = 50;
+  if (matchedHobbiesCount === 1) {
+    hobbyScore = 75;
+  } else if (matchedHobbiesCount >= 2) {
+    hobbyScore = 95;
+  }
+  
+  // Also boost slightly if any high school stream interest is found
+  if (stream === "PCM" && hList.some(h => h.includes("comput") || h.includes("code"))) hobbyScore = Math.min(hobbyScore + 5, 100);
+  if (stream === "PCB" && hList.some(h => h.includes("bio") || h.includes("med"))) hobbyScore = Math.min(hobbyScore + 5, 100);
+  if (stream === "Commerce" && hList.some(h => h.includes("finance") || h.includes("business"))) hobbyScore = Math.min(hobbyScore + 5, 100);
+  if (stream === "Humanities" && hList.some(h => h.includes("art") || h.includes("psych"))) hobbyScore = Math.min(hobbyScore + 5, 100);
+
+  hobbyScore = Math.min(Math.max(hobbyScore, 45), 100);
+
+  // --- 3. Weighted Combination (51% Marks, 49% Hobbies) ---
+  const finalScore = (marksScore * 0.51) + (hobbyScore * 0.49);
+  
+  return Math.round(finalScore);
+}
+
 export function generateLocalReport(
   studentName: string,
   hobbies: string[],
@@ -221,33 +325,12 @@ export function generateLocalReport(
   const hList = (hobbies || []).map(h => String(h).toLowerCase());
   const logsList = (browsingLogs || []);
 
-  let scores = {
-    PCM: 65,
-    PCB: 60,
-    Commerce: 55,
-    Humanities: 50
+  const scores = {
+    PCM: calculateWeightedScore(marks, hobbies, "PCM"),
+    PCB: calculateWeightedScore(marks, hobbies, "PCB"),
+    Commerce: calculateWeightedScore(marks, hobbies, "Commerce"),
+    Humanities: calculateWeightedScore(marks, hobbies, "Humanities")
   };
-
-  hList.forEach(h => {
-    if (h.includes("code") || h.includes("program") || h.includes("robot") || h.includes("math") || h.includes("tech") || h.includes("game") || h.includes("comput")) scores.PCM += 15;
-    if (h.includes("bio") || h.includes("chem") || h.includes("nature") || h.includes("health") || h.includes("doctor") || h.includes("med") || h.includes("clinic") || h.includes("biology") || h.includes("science")) scores.PCB += 15;
-    if (h.includes("finance") || h.includes("business") || h.includes("money") || h.includes("stock") || h.includes("invest") || h.includes("market") || h.includes("trade") || h.includes("economics") || h.includes("entrepreneur")) scores.Commerce += 15;
-    if (h.includes("art") || h.includes("design") || h.includes("writ") || h.includes("read") || h.includes("paint") || h.includes("psych") || h.includes("history") || h.includes("music") || h.includes("book") || h.includes("philosoph")) scores.Humanities += 15;
-  });
-
-  logsList.forEach(log => {
-    const cat = String(log.category || "").toLowerCase();
-    const t = String(log.title || "").toLowerCase();
-    if (cat.includes("tech") || cat.includes("comput") || t.includes("code") || t.includes("program") || t.includes("math")) scores.PCM += 8;
-    if (cat.includes("science") || cat.includes("space") || t.includes("bio") || t.includes("chem") || t.includes("health")) scores.PCB += 8;
-    if (cat.includes("business") || cat.includes("finance") || t.includes("market") || t.includes("startup") || t.includes("money")) scores.Commerce += 8;
-    if (cat.includes("art") || cat.includes("human") || cat.includes("writ") || t.includes("design") || t.includes("psych") || t.includes("history")) scores.Humanities += 8;
-  });
-
-  scores.PCM = Math.min(Math.max(scores.PCM, 45), 98);
-  scores.PCB = Math.min(Math.max(scores.PCB, 45), 98);
-  scores.Commerce = Math.min(Math.max(scores.Commerce, 45), 98);
-  scores.Humanities = Math.min(Math.max(scores.Humanities, 45), 98);
 
   const sortedPathways = Object.entries(scores).sort((a, b) => b[1] - a[1]);
 
