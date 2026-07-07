@@ -10,11 +10,34 @@ import CareerAdvisorChatbot from "./components/CareerAdvisorChatbot";
 import ShiningWaveLogo from "./components/ShiningWaveLogo";
 import SkillGapAnalysis from "./components/SkillGapAnalysis";
 import JobMarketAlerts from "./components/JobMarketAlerts";
-import GamificationDashboard from "./components/GamificationDashboard";
-import { Compass, Sparkles, BookOpen, BrainCircuit, UserCheck, ArrowRight, Loader2, RefreshCw, Star, Award, Shield, Users, Mail, Bell, Flame } from "lucide-react";
+import EmailVerificationWidget from "./components/EmailVerificationWidget";
+import { Compass, Sparkles, BookOpen, BrainCircuit, UserCheck, ArrowRight, Loader2, RefreshCw, Star, Award, Shield, Users, Mail, Bell, Flame, Sun, Moon } from "lucide-react";
 import { generateLocalReport, calculateWeightedScore } from "./lib/fallbackGenerator";
 
 export default function App() {
+  // Dark Mode state
+  const [darkMode, setDarkMode] = useState(() => {
+    if (typeof window !== "undefined") {
+      const saved = localStorage.getItem("theme");
+      if (saved) {
+        return saved === "dark";
+      }
+      return window.matchMedia("(prefers-color-scheme: dark)").matches;
+    }
+    return false;
+  });
+
+  useEffect(() => {
+    const root = window.document.documentElement;
+    if (darkMode) {
+      root.classList.add("dark");
+      localStorage.setItem("theme", "dark");
+    } else {
+      root.classList.remove("dark");
+      localStorage.setItem("theme", "light");
+    }
+  }, [darkMode]);
+
   // Input states
   const [studentName, setStudentName] = useState("Aarav Sharma");
   const [selectedHobbies, setSelectedHobbies] = useState<string[]>(PRESET_PERSONAS[0].hobbies);
@@ -234,16 +257,16 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-800 flex flex-col font-sans selection:bg-indigo-600 selection:text-white relative">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-100 flex flex-col font-sans selection:bg-indigo-600 selection:text-white relative transition-colors duration-300">
       {/* Dynamic ambient header glow */}
-      <div className="absolute top-0 left-1/4 w-96 h-96 bg-indigo-500/5 rounded-full blur-3xl pointer-events-none" />
-      <div className="absolute top-10 right-1/4 w-96 h-96 bg-amber-500/5 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute top-0 left-1/4 w-96 h-96 bg-indigo-500/5 dark:bg-indigo-500/10 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute top-10 right-1/4 w-96 h-96 bg-amber-500/5 dark:bg-amber-500/10 rounded-full blur-3xl pointer-events-none" />
 
       {/* Top Header */}
-      <header className="border-b border-slate-200 bg-white/95 sticky top-0 z-50 backdrop-blur shadow-sm">
+      <header className="border-b border-slate-200 dark:border-slate-800 bg-white/95 dark:bg-slate-900/95 sticky top-0 z-50 backdrop-blur shadow-sm transition-colors duration-300">
         <div className="max-w-7xl mx-auto px-4 py-4 flex flex-col sm:flex-row justify-between items-center gap-4">
           <div className="flex items-center gap-3">
-            <div className="relative w-11 h-11 flex items-center justify-center rounded-2xl bg-slate-900 shadow-md border border-slate-200 group overflow-hidden">
+            <div className="relative w-11 h-11 flex items-center justify-center rounded-2xl bg-slate-900 shadow-md border border-slate-200 dark:border-slate-800 group overflow-hidden">
               {/* Elegant deep gradient background */}
               <div className="absolute inset-0 bg-gradient-to-tr from-slate-800 via-indigo-950 to-slate-900 opacity-95" />
               {/* Subtle dynamic border glow */}
@@ -254,48 +277,38 @@ export default function App() {
               </div>
             </div>
             <div>
-              <h1 className="text-base font-extrabold text-slate-900 tracking-tight flex flex-wrap items-center gap-2 font-sans">
+              <h1 className="text-base font-extrabold text-slate-900 dark:text-white tracking-tight flex flex-wrap items-center gap-2 font-sans">
                 <ShiningWaveLogo text="Stream Align" />
-                <span className="text-[10px] font-mono font-bold bg-indigo-50 text-indigo-800 border border-indigo-200 px-2 py-0.5 rounded-full">
+                <span className="text-[10px] font-mono font-bold bg-indigo-50 dark:bg-indigo-950/40 text-indigo-800 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800 px-2 py-0.5 rounded-full">
                   Stream & Career Portal
                 </span>
-                {report ? (
-                  report.isFallback ? (
-                    <span className="text-[10px] font-mono font-bold bg-amber-50 text-amber-800 border border-amber-200 px-2 py-0.5 rounded-full">
-                      Local Coprocessor
-                    </span>
-                  ) : (
-                    <span className="text-[10px] font-mono font-bold bg-emerald-50 text-emerald-800 border border-emerald-200 px-2 py-0.5 rounded-full">
-                      Gemini 3.5 Active
-                    </span>
-                  )
-                ) : null}
               </h1>
-              <p className="text-xs text-slate-500 font-medium">Standardized Class 11-12 stream mapping & futuristic career progression tracker</p>
+              <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">Standardized Class 11-12 stream mapping & futuristic career progression tracker</p>
             </div>
           </div>
 
           <div className="flex flex-wrap items-center gap-3">
-            {/* XP Points Summary Header Widget */}
-            <div
-              onClick={() => setActiveTab("gamification")}
-              className="flex items-center gap-2 bg-indigo-50 border border-indigo-200 hover:bg-indigo-100/70 p-2 rounded-xl cursor-pointer transition-all shadow-sm"
-              title="Click to view Gamification Rewards & Badges"
+            {/* Theme Toggle Button */}
+            <button
+              onClick={() => setDarkMode(!darkMode)}
+              className="p-2.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 transition-all shadow-sm flex items-center justify-center cursor-pointer hover:scale-105 active:scale-95"
+              title={darkMode ? "Switch to Light Mode" : "Switch to Dark Mode (High Visual Comfort)"}
+              aria-label="Toggle dark mode"
             >
-              <Flame className="w-4 h-4 text-amber-500 animate-pulse shrink-0" />
-              <span className="text-xs font-black text-indigo-950 font-mono leading-none">{points} XP</span>
-              <span className="text-[9px] font-extrabold text-indigo-700 bg-white border border-indigo-100 rounded px-1 py-0.5 uppercase tracking-wide shrink-0">
-                Level {points < 200 ? 1 : points < 500 ? 2 : points < 1000 ? 3 : 4}
-              </span>
-            </div>
+              {darkMode ? (
+                <Sun className="w-4 h-4 text-amber-400 fill-amber-400" />
+              ) : (
+                <Moon className="w-4 h-4 text-indigo-600 fill-indigo-100" />
+              )}
+            </button>
 
-            <div className="flex flex-wrap items-center gap-1 bg-slate-100 p-1 rounded-xl border border-slate-200">
+            <div className="flex flex-wrap items-center gap-1 bg-slate-100 dark:bg-slate-900 p-1 rounded-xl border border-slate-200 dark:border-slate-800">
               <button
                 onClick={() => setActiveTab("counselor")}
-                className={`text-xs font-bold px-3.5 py-2 rounded-lg transition-all ${
+                className={`text-xs font-bold px-3.5 py-2 rounded-lg transition-all cursor-pointer ${
                   activeTab === "counselor"
-                    ? "bg-white text-indigo-700 border border-slate-200 shadow-sm"
-                    : "text-slate-500 hover:text-slate-800"
+                    ? "bg-white dark:bg-slate-800 text-indigo-700 dark:text-indigo-400 border border-slate-200 dark:border-slate-700 shadow-sm"
+                    : "text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200"
                 }`}
               >
                 Counselor Report & Chat
@@ -303,12 +316,12 @@ export default function App() {
               <button
                 onClick={() => setActiveTab("milestones")}
                 disabled={!selectedCareer}
-                className={`text-xs font-bold px-3.5 py-2 rounded-lg transition-all ${
+                className={`text-xs font-bold px-3.5 py-2 rounded-lg transition-all cursor-pointer ${
                   !selectedCareer ? "opacity-50 cursor-not-allowed" : ""
                 } ${
                   activeTab === "milestones"
-                    ? "bg-white text-indigo-700 border border-slate-200 shadow-sm"
-                    : "text-slate-500 hover:text-slate-800"
+                    ? "bg-white dark:bg-slate-800 text-indigo-700 dark:text-indigo-400 border border-slate-200 dark:border-slate-700 shadow-sm"
+                    : "text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200"
                 }`}
               >
                 Progression Dashboard
@@ -316,12 +329,12 @@ export default function App() {
               <button
                 onClick={() => setActiveTab("gap-analysis")}
                 disabled={!selectedCareer}
-                className={`text-xs font-bold px-3.5 py-2 rounded-lg transition-all ${
+                className={`text-xs font-bold px-3.5 py-2 rounded-lg transition-all cursor-pointer ${
                   !selectedCareer ? "opacity-50 cursor-not-allowed" : ""
                 } ${
                   activeTab === "gap-analysis"
-                    ? "bg-white text-indigo-700 border border-slate-200 shadow-sm"
-                    : "text-slate-500 hover:text-slate-800"
+                    ? "bg-white dark:bg-slate-800 text-indigo-700 dark:text-indigo-400 border border-slate-200 dark:border-slate-700 shadow-sm"
+                    : "text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200"
                 }`}
               >
                 AI Skill Gaps
@@ -329,25 +342,15 @@ export default function App() {
               <button
                 onClick={() => setActiveTab("alerts")}
                 disabled={!selectedCareer}
-                className={`text-xs font-bold px-3.5 py-2 rounded-lg transition-all ${
+                className={`text-xs font-bold px-3.5 py-2 rounded-lg transition-all cursor-pointer ${
                   !selectedCareer ? "opacity-50 cursor-not-allowed" : ""
                 } ${
                   activeTab === "alerts"
-                    ? "bg-white text-indigo-700 border border-slate-200 shadow-sm"
-                    : "text-slate-500 hover:text-slate-800"
+                    ? "bg-white dark:bg-slate-800 text-indigo-700 dark:text-indigo-400 border border-slate-200 dark:border-slate-700 shadow-sm"
+                    : "text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200"
                 }`}
               >
                 Market Alerts
-              </button>
-              <button
-                onClick={() => setActiveTab("gamification")}
-                className={`text-xs font-bold px-3.5 py-2 rounded-lg transition-all ${
-                  activeTab === "gamification"
-                    ? "bg-white text-indigo-700 border border-slate-200 shadow-sm"
-                    : "text-slate-500 hover:text-slate-800"
-                }`}
-              >
-                🏆 Badges & Leaderboard
               </button>
             </div>
           </div>
@@ -360,11 +363,11 @@ export default function App() {
         {/* Section 1: Dynamic Persona & Input Sandbox */}
         <div className="space-y-4">
           <div className="flex justify-between items-center">
-            <h2 className="text-sm font-bold text-slate-700 uppercase tracking-wider flex items-center gap-2">
-              <UserCheck className="w-4 h-4 text-indigo-600" />
+            <h2 className="text-sm font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider flex items-center gap-2">
+              <UserCheck className="w-4 h-4 text-indigo-600 dark:text-indigo-450" />
               1. Setup Student Background Sandbox
             </h2>
-            <span className="text-xs text-slate-500 font-medium italic">Select a preset to test immediate combinations</span>
+            <span className="text-xs text-slate-500 dark:text-slate-400 font-medium italic">Select a preset to test immediate combinations</span>
           </div>
 
           {/* Preset Buttons */}
@@ -375,16 +378,16 @@ export default function App() {
                 <button
                   key={persona.name}
                   onClick={() => handleSelectPersona(persona)}
-                  className={`p-3.5 rounded-xl border text-left transition-all flex items-center gap-3 relative overflow-hidden shadow-sm ${
+                  className={`p-3.5 rounded-xl border text-left transition-all flex items-center gap-3 relative overflow-hidden shadow-sm cursor-pointer ${
                     isSelected
-                      ? "bg-indigo-50/80 border-indigo-500 ring-1 ring-indigo-500/30 text-indigo-950"
-                      : "bg-white hover:bg-slate-50 border-slate-200 text-slate-700"
+                      ? "bg-indigo-50/80 dark:bg-indigo-950/20 border-indigo-500 dark:border-indigo-800 ring-1 ring-indigo-500/30 dark:ring-indigo-800/30 text-indigo-950 dark:text-indigo-200"
+                      : "bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300"
                   }`}
                 >
                   <span className="text-2xl shrink-0">{persona.avatar}</span>
                   <div className="min-w-0">
-                    <span className={`text-xs font-bold block truncate ${isSelected ? "text-indigo-950" : "text-slate-800"}`}>{persona.name}</span>
-                    <span className="text-[10px] text-slate-500 block truncate">{persona.description}</span>
+                    <span className={`text-xs font-bold block truncate ${isSelected ? "text-indigo-950 dark:text-indigo-200" : "text-slate-800 dark:text-slate-100"}`}>{persona.name}</span>
+                    <span className="text-[10px] text-slate-500 dark:text-slate-400 block truncate">{persona.description}</span>
                   </div>
                   {isSelected && (
                     <div className="absolute top-1 right-1">
@@ -397,25 +400,25 @@ export default function App() {
           </div>
 
           {/* Name modification bar */}
-          <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex flex-col md:flex-row gap-4 items-center">
+          <div className="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col md:flex-row gap-4 items-center">
             <div className="w-full md:w-1/3">
-              <label className="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">Student Full Name</label>
+              <label className="block text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1.5">Student Full Name</label>
               <input
                 type="text"
                 value={studentName}
                 onChange={(e) => setStudentName(e.target.value)}
                 placeholder="e.g. Priyanshu Singh"
-                className="w-full bg-slate-50 text-xs text-slate-800 rounded-xl p-3 border border-slate-200 focus:outline-none focus:bg-white focus:border-indigo-500 transition-all font-medium"
+                className="w-full bg-slate-50 dark:bg-slate-950 text-xs text-slate-800 dark:text-slate-100 rounded-xl p-3 border border-slate-200 dark:border-slate-800 focus:outline-none focus:bg-white dark:focus:bg-slate-900 focus:border-indigo-500 transition-all font-medium"
               />
             </div>
             <div className="w-full md:w-2/3 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4">
-              <div className="text-xs text-slate-500 leading-relaxed font-medium">
+              <div className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed font-medium">
                 Provide custom campus WiFi searches & hobbies on the cards below. Once prepared, evaluate the profile using our AI core.
               </div>
               <button
                 onClick={handleRunAnalysis}
                 disabled={isLoading || !studentName.trim()}
-                className="bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 text-white font-bold text-xs px-6 py-3.5 rounded-xl flex items-center justify-center gap-2 transition-all active:scale-95 shadow-md shadow-indigo-600/10 shrink-0"
+                className="bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 text-white font-bold text-xs px-6 py-3.5 rounded-xl flex items-center justify-center gap-2 transition-all active:scale-95 shadow-md shadow-indigo-600/10 shrink-0 cursor-pointer"
               >
                 {isLoading ? (
                   <>
@@ -431,6 +434,9 @@ export default function App() {
               </button>
             </div>
           </div>
+
+          {/* Email verification optional widget */}
+          <EmailVerificationWidget />
 
           {/* Grid of Browsing Logs & Hobby entries */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -463,18 +469,18 @@ export default function App() {
           />
 
           {/* AI Coprocessor: Live Compatibility Matrix */}
-          <div className="bg-indigo-50/40 p-5 rounded-2xl border border-indigo-100 space-y-4 mt-6 shadow-sm">
+          <div className="bg-indigo-50/40 dark:bg-indigo-950/10 p-5 rounded-2xl border border-indigo-100 dark:border-indigo-950/30 space-y-4 mt-6 shadow-sm">
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
               <div>
-                <h3 className="text-xs font-bold text-indigo-900 uppercase tracking-wider flex items-center gap-1.5">
-                  <Sparkles className="w-3.5 h-3.5 text-indigo-600 animate-pulse" />
+                <h3 className="text-xs font-bold text-indigo-900 dark:text-indigo-300 uppercase tracking-wider flex items-center gap-1.5">
+                  <Sparkles className="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400 animate-pulse" />
                   AI Stream Compatibility Coprocessor (Real-time Local Calculations)
                 </h3>
-                <p className="text-[11px] text-slate-600 leading-relaxed mt-0.5">
+                <p className="text-[11px] text-slate-600 dark:text-slate-400 leading-relaxed mt-0.5">
                   This widget calculates immediate stream compatibility based on your selected hobbies and campus Wi-Fi search logs. Click &quot;Run AI Career Path Evaluation&quot; below or above to trigger the deep Gemini AI model.
                 </p>
               </div>
-              <span className="text-[10px] bg-indigo-100 text-indigo-800 font-mono font-bold px-2.5 py-1 rounded-md border border-indigo-200 uppercase tracking-wider shrink-0">
+              <span className="text-[10px] bg-indigo-100 dark:bg-indigo-950/50 text-indigo-800 dark:text-indigo-300 font-mono font-bold px-2.5 py-1 rounded-md border border-indigo-200 dark:border-indigo-850 uppercase tracking-wider shrink-0">
                 ⚡ Live calculations active
               </span>
             </div>
@@ -486,15 +492,15 @@ export default function App() {
                 { title: "Commerce & Fin", val: simulatedAffinity.commerce, color: "from-amber-600 to-orange-500", desc: "Finance, Biz, Economics" },
                 { title: "Liberal Arts & Humanities", val: simulatedAffinity.humanities, color: "from-pink-600 to-rose-500", desc: "Psychology, Sociology, Arts" },
               ].map((item, idx) => (
-                <div key={idx} className="bg-white p-3.5 rounded-xl border border-slate-200/80 shadow-sm space-y-2">
+                <div key={idx} className="bg-white dark:bg-slate-900 p-3.5 rounded-xl border border-slate-200/80 dark:border-slate-800/80 shadow-sm space-y-2">
                   <div className="flex justify-between items-center text-xs">
-                    <span className="font-bold text-slate-800 block truncate" title={item.title}>{item.title}</span>
-                    <span className="font-mono font-bold text-slate-900 text-[11px] shrink-0">{item.val}%</span>
+                    <span className="font-bold text-slate-800 dark:text-slate-200 block truncate" title={item.title}>{item.title}</span>
+                    <span className="font-mono font-bold text-slate-900 dark:text-slate-100 text-[11px] shrink-0">{item.val}%</span>
                   </div>
-                  <div className="w-full h-2 bg-slate-100 rounded-full overflow-hidden">
+                  <div className="w-full h-2 bg-slate-100 dark:bg-slate-850 rounded-full overflow-hidden">
                     <div className={`h-full bg-gradient-to-r ${item.color} rounded-full transition-all duration-500`} style={{ width: `${item.val}%` }} />
                   </div>
-                  <span className="text-[9px] text-slate-500 block truncate">{item.desc}</span>
+                  <span className="text-[9px] text-slate-500 dark:text-slate-400 block truncate">{item.desc}</span>
                 </div>
               ))}
             </div>
@@ -653,15 +659,7 @@ export default function App() {
                   careerPaths={report.longTermCareers.map((c) => c.careerTitle)}
                   onAwardPoints={handleAwardPoints}
                 />
-              ) : (
-                /* Gamification leaderboard & badges feature */
-                <GamificationDashboard
-                  studentName={studentName}
-                  points={points}
-                  pointHistory={pointHistory}
-                  badges={badges}
-                />
-              )}
+              ) : null}
             </div>
           )}
         </div>

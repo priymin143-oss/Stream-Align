@@ -7,7 +7,7 @@ interface ShiningWaveLogoProps {
 
 export default function ShiningWaveLogo({ text = "Stream Align", className = "" }: ShiningWaveLogoProps) {
   return (
-    <span className={`shining-wave-text font-black tracking-tight inline-flex items-center select-none ${className}`}>
+    <span className={`font-black tracking-tight inline-flex items-center select-none ${className}`}>
       {text.split("").map((char, idx) => {
         if (char === " ") {
           return <span key={idx} className="w-[0.25em]" />;
@@ -15,7 +15,7 @@ export default function ShiningWaveLogo({ text = "Stream Align", className = "" 
         return (
           <span
             key={idx}
-            className="wave-letter"
+            className="wave-letter shining-wave-text"
             style={{
               animationDelay: `${idx * 0.08}s`,
             }}
