@@ -7,12 +7,14 @@ interface CareerAdvisorChatbotProps {
   profile: StudentProfile;
   lastReport: AnalysisReport | null;
   onMessageSent?: () => void;
+  className?: string;
 }
 
 export default function CareerAdvisorChatbot({
   profile,
   lastReport,
   onMessageSent,
+  className = "h-[560px]",
 }: CareerAdvisorChatbotProps) {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [inputText, setInputText] = useState("");
@@ -154,7 +156,7 @@ I've analyzed your hobbies and your campus Wi-Fi browsing patterns. Feel free to
   ];
 
   return (
-    <div id="career-advisor-chatbot-card" className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col h-[560px] overflow-hidden transition-colors duration-300">
+    <div id="career-advisor-chatbot-card" className={`bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col overflow-hidden transition-colors duration-300 ${className}`}>
       {/* Header */}
       <div className="p-4 bg-slate-50 dark:bg-slate-950 border-b border-slate-200 dark:border-slate-800 flex justify-between items-center transition-colors duration-300">
         <div className="flex items-center gap-2.5">

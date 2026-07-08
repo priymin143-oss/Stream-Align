@@ -11,7 +11,7 @@ import ShiningWaveLogo from "./components/ShiningWaveLogo";
 import SkillGapAnalysis from "./components/SkillGapAnalysis";
 import JobMarketAlerts from "./components/JobMarketAlerts";
 import EmailVerificationWidget from "./components/EmailVerificationWidget";
-import { Compass, Sparkles, BookOpen, BrainCircuit, UserCheck, ArrowRight, Loader2, RefreshCw, Star, Award, Shield, Users, Mail, Bell, Flame, Sun, Moon } from "lucide-react";
+import { Compass, Sparkles, BookOpen, BrainCircuit, UserCheck, ArrowRight, Loader2, RefreshCw, Star, Award, Shield, Users, Mail, Bell, Flame, Sun, Moon, MessageSquare } from "lucide-react";
 import { generateLocalReport, calculateWeightedScore } from "./lib/fallbackGenerator";
 
 export default function App() {
@@ -56,6 +56,7 @@ export default function App() {
   const [selectedCareer, setSelectedCareer] = useState<CareerOption | null>(null);
   const [completedMilestonesByCareer, setCompletedMilestonesByCareer] = useState<Record<string, string[]>>({});
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [isGlobalChatOpen, setIsGlobalChatOpen] = useState(false);
 
   // Instant simulated calculations using weighted 51% marks and 49% hobbies formula
   const simulatedAffinity = React.useMemo(() => {
@@ -272,8 +273,8 @@ export default function App() {
               {/* Subtle dynamic border glow */}
               <div className="absolute -inset-1 bg-gradient-to-r from-indigo-500 to-amber-500 rounded-2xl blur opacity-20 group-hover:opacity-40 transition duration-500" />
               
-              <div className="relative flex items-center justify-center">
-                <Compass className="w-6 h-6 text-indigo-400 group-hover:rotate-45 transition-transform duration-500" />
+              <div className="relative flex items-center justify-center w-full h-full p-2.5">
+                <img src="/favicon.svg" alt="Stream Align Logo" className="w-full h-full object-contain filter drop-shadow group-hover:scale-110 transition-transform duration-300" referrerPolicy="no-referrer" />
               </div>
             </div>
             <div>
@@ -670,6 +671,49 @@ export default function App() {
         <p className="font-semibold text-slate-600">© 2026 Stream Align. Powered by search-grounded Gemini 3.5 Flash.</p>
         <p className="mt-1 text-slate-400">Standardized counseling & stream mapping utility for high school students tracking academic milestones transparently.</p>
       </footer>
+
+      {/* Floating Career Advisor Chatbot (Always available across all tabs) */}
+      <div className="fixed bottom-6 right-6 z-[100] flex flex-col items-end">
+        {isGlobalChatOpen && (
+          <div className="w-[360px] sm:w-[420px] h-[520px] mb-4 rounded-2xl border border-white/30 dark:border-white/5 shadow-[0_12px_40px_rgba(0,0,0,0.08)] dark:shadow-[0_12px_40px_rgba(0,0,0,0.3)] bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl flex flex-col overflow-hidden animate-fade-in transition-all">
+            <CareerAdvisorChatbot
+              profile={{
+                name: studentName,
+                hobbies: selectedHobbies,
+                browsingLogs,
+                marks,
+                technicalSkills,
+                softSkills,
+                workExperience,
+                educationQualifications
+              }}
+              lastReport={report}
+              className="h-full border-none shadow-none bg-transparent dark:bg-transparent"
+              onMessageSent={() => handleAwardPoints(30, "Consulted with AI Advisor chatbot", "insight_seeker")}
+            />
+          </div>
+        )}
+
+        <button
+          onClick={() => setIsGlobalChatOpen(!isGlobalChatOpen)}
+          className={`w-14 h-14 rounded-full flex items-center justify-center shadow-lg transition-all transform hover:scale-105 active:scale-95 cursor-pointer border ${
+            isGlobalChatOpen
+              ? "bg-slate-900 dark:bg-slate-800 text-white border-slate-700/20"
+              : "bg-indigo-600 hover:bg-indigo-550 text-white border-indigo-500/20"
+          }`}
+          title="Consult AI Career Advisor"
+        >
+          {isGlobalChatOpen ? (
+            <span className="text-lg font-bold">✕</span>
+          ) : (
+            <div className="relative">
+              <MessageSquare className="w-6 h-6 animate-pulse" />
+              <span className="absolute -top-1.5 -right-1.5 w-3 h-3 bg-emerald-500 rounded-full border-2 border-indigo-600 animate-ping" />
+              <span className="absolute -top-1.5 -right-1.5 w-3 h-3 bg-emerald-500 rounded-full border-2 border-indigo-600" />
+            </div>
+          )}
+        </button>
+      </div>
     </div>
   );
 }

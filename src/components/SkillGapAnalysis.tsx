@@ -37,6 +37,18 @@ export default function SkillGapAnalysis({ profile, careers, onAwardPoints }: Sk
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  // Synchronize selected career when careers list changes or is loaded
+  useEffect(() => {
+    if (careers.length > 0) {
+      const exists = selectedCareer && careers.some(c => c.careerTitle === selectedCareer.careerTitle);
+      if (!exists) {
+        setSelectedCareer(careers[0]);
+      }
+    } else {
+      setSelectedCareer(null);
+    }
+  }, [careers]);
+
   // Run initial analysis when selected career changes
   useEffect(() => {
     if (selectedCareer) {

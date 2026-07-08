@@ -922,9 +922,13 @@ app.post("/api/career/chat", async (req, res) => {
     `;
 
     // Convert client-side message list to GenAI API format
-    const contents = messages.map((m: any) => {
+    // Filter out any initial welcome/system messages from "model" to adhere to Gemini's alternation requirements.
+    const userStartIndex = messages.findIndex((m: any) => m.role === "user");
+    const activeMessages = userStartIndex !== -1 ? messages.slice(userStartIndex) : messages;
+
+    const contents = activeMessages.map((m: any) => {
       return {
-        role: m.role,
+        role: m.role === "model" ? "model" : "user",
         parts: [{ text: m.text }]
       };
     });
@@ -1153,10 +1157,13 @@ app.post("/api/career/alerts", async (req, res) => {
 
 // Offline Fallback Generators for Gap Analysis & Alerts
 function generateOfflineGapAnalysis(profile: any, careerTitle: string, skillsRequired: string[]) {
+  const safeProfile = profile || {};
   const currentSkills = [
-    ...(profile.technicalSkills || []),
-    ...(profile.softSkills || [])
-  ].map((s: string) => s.toLowerCase().trim());
+    ...(safeProfile.technicalSkills || []),
+    ...(safeProfile.softSkills || [])
+  ]
+    .filter(s => s != null)
+    .map((s: any) => String(s).toLowerCase().trim());
 
   const matchedSkills: string[] = [];
   const gapSkills: string[] = [];
@@ -1206,32 +1213,33 @@ function generateOfflineGapAnalysis(profile: any, careerTitle: string, skillsReq
     suggestedProject: {
       title: `Personal Capstone: Interactive ${careerTitle} Sandbox`,
       description: `Create a comprehensive portfolio project that highlights your hands-on proficiency in ${gapSkills.join(", ") || "standard industry techniques"}. Incorporate automated unit testing, clear code documentation, and publish it on GitHub.`,
-      techStack: [profile.technicalSkills?.[0] || "Python", gapSkills[0] || "TypeScript", "GitHub"],
+      techStack: [safeProfile.technicalSkills?.[0] || "Python", gapSkills[0] || "TypeScript", "GitHub"],
       difficulty: "Intermediate"
     },
     timelineEstimate: "2-3 months at 6 hours/week",
-    strategicAdvice: `Hi ${profile.name}! Based on your current strengths, you have already built a solid foundation in ${matchedSkills.join(", ") || "essential core traits"}. Directing your efforts towards bridging your technical skill gaps via hands-on projects and professional certifications will significantly boost your profile.`
+    strategicAdvice: `Hi ${safeProfile.name || "Student"}! Based on your current strengths, you have already built a solid foundation in ${matchedSkills.join(", ") || "essential core traits"}. Directing your efforts towards bridging your technical skill gaps via hands-on projects and professional certifications will significantly boost your profile.`
   };
 }
 
 function generateOfflineAlerts(profile: any, careerPaths: string[]) {
-  const careers = careerPaths.length > 0 ? careerPaths : ["Systems Engineer", "Data Scientist"];
+  const safeProfile = profile || {};
+  const careers = careerPaths && careerPaths.length > 0 ? careerPaths : ["Systems Engineer", "Data Scientist"];
   return [
     {
       id: "alert-1",
       type: "hiring_alert",
       title: `Early Career Registries posted for ${careers[0]} pathways`,
-      description: `Industry reports show that top-tier companies are launching summer internship registrations for high-achieving high schoolers. Showcase your technical skills: ${profile.technicalSkills?.[0] || "programming"} to apply.`,
+      description: `Industry reports show that top-tier companies are launching summer internship registrations for high-achieving high schoolers. Showcase your technical skills: ${safeProfile.technicalSkills?.[0] || "programming"} to apply.`,
       source: "https://www.linkedin.com/jobs",
-      trendingSkills: [profile.technicalSkills?.[0] || "Python", "Cloud Computing"],
+      trendingSkills: [safeProfile.technicalSkills?.[0] || "Python", "Cloud Computing"],
       urgency: "high",
       companyName: "Google Cloud Labs"
     },
     {
       id: "alert-2",
       type: "skill_trend",
-      title: `Hiring demand spikes for students with hands-on ${profile.technicalSkills?.[0] || "technical"} skills`,
-      description: `A 45% year-over-year surge in postings requests project-based knowledge. Your hobby in "${profile.hobbies?.[0] || "analytics"}" aligns nicely with high-paying entry roles.`,
+      title: `Hiring demand spikes for students with hands-on ${safeProfile.technicalSkills?.[0] || "technical"} skills`,
+      description: `A 45% year-over-year surge in postings requests project-based knowledge. Your hobby in "${safeProfile.hobbies?.[0] || "analytics"}" aligns nicely with high-paying entry roles.`,
       source: "https://www.weforum.org",
       trendingSkills: ["Data Analysis", "Critical Reasoning"],
       urgency: "medium",

@@ -29,7 +29,7 @@ export default function JobMarketAlerts({ profile, careerPaths, onAwardPoints }:
 
   // Load initial alerts based on profile paths
   useEffect(() => {
-    if (careerPaths.length > 0 && !hasLoadedOnce) {
+    if (careerPaths.length > 0) {
       fetchAlerts();
     }
   }, [careerPaths]);

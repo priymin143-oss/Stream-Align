@@ -29,16 +29,16 @@ export default function EmailVerificationWidget() {
   };
 
   return (
-    <div className="backdrop-blur-md bg-white/40 dark:bg-slate-900/30 p-5 rounded-2xl border border-white/20 dark:border-slate-800/40 shadow-lg space-y-4 transition-all duration-300">
+    <div className="backdrop-blur-xl bg-white/40 dark:bg-slate-900/20 p-5 rounded-2xl border border-white/30 dark:border-white/5 shadow-[0_8px_32px_rgba(0,0,0,0.04)] dark:shadow-[0_8px_32px_rgba(0,0,0,0.2)] space-y-4 transition-all duration-300">
       <div className="flex justify-between items-start">
         <div className="flex items-center gap-2.5">
-          <div className="w-9 h-9 rounded-xl bg-white/50 dark:bg-slate-900/50 border border-white/30 dark:border-slate-800/30 flex items-center justify-center text-slate-800 dark:text-slate-200 shadow-sm">
-            <Mail className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
+          <div className="w-9 h-9 rounded-xl bg-white/60 dark:bg-slate-900/40 border border-white/40 dark:border-white/5 flex items-center justify-center text-slate-800 dark:text-slate-200 shadow-inner">
+            <Mail className="w-4 h-4 text-indigo-650 dark:text-indigo-400" />
           </div>
           <div>
-            <h3 className="text-xs font-bold text-slate-800 dark:text-slate-100 uppercase tracking-wider flex items-center gap-1.5">
+            <h3 className="text-xs font-bold text-slate-800 dark:text-slate-100 uppercase tracking-wider flex items-center gap-1.5 font-sans">
               Email Association
-              <span className="text-[9px] font-bold bg-white/60 dark:bg-slate-900/60 text-slate-500 dark:text-slate-400 px-2 py-0.5 rounded border border-white/20 dark:border-slate-850 normal-case font-sans">
+              <span className="text-[9px] font-bold bg-white/70 dark:bg-slate-900/60 text-slate-500 dark:text-slate-400 px-2 py-0.5 rounded-full border border-white/30 dark:border-white/10 normal-case font-sans">
                 Optional
               </span>
             </h3>
@@ -46,7 +46,7 @@ export default function EmailVerificationWidget() {
           </div>
         </div>
         {isVerified && (
-          <span className="text-[10px] bg-emerald-500/10 dark:bg-emerald-500/20 text-emerald-700 dark:text-emerald-400 font-bold px-2.5 py-1 rounded-lg border border-emerald-500/20 flex items-center gap-1 shrink-0 animate-fade-in">
+          <span className="text-[10px] bg-emerald-500/10 dark:bg-emerald-500/20 text-emerald-700 dark:text-emerald-400 font-bold px-2.5 py-1 rounded-full border border-emerald-500/20 flex items-center gap-1 shrink-0 animate-fade-in">
             <ShieldCheck className="w-3.5 h-3.5 text-emerald-500" />
             Linked
           </span>
@@ -61,13 +61,13 @@ export default function EmailVerificationWidget() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="Enter your email ID..."
-              className="flex-1 bg-white/60 dark:bg-slate-950/40 text-xs text-slate-800 dark:text-slate-100 rounded-xl p-3 border border-white/30 dark:border-slate-800/40 focus:outline-none focus:bg-white/90 dark:focus:bg-slate-950/80 focus:border-indigo-500/50 focus:ring-1 focus:ring-indigo-500/20 transition-all font-medium placeholder-slate-400"
+              className="flex-1 bg-white/70 dark:bg-slate-950/20 text-xs text-slate-800 dark:text-slate-100 rounded-xl p-3 border border-white/40 dark:border-white/10 focus:outline-none focus:bg-white/95 dark:focus:bg-slate-950/40 focus:border-indigo-500/40 focus:ring-1 focus:ring-indigo-500/25 transition-all font-medium placeholder-slate-400 dark:placeholder-slate-600"
             />
             <button
               type="button"
               onClick={handleVerify}
               disabled={isLoading}
-              className="bg-indigo-600/90 hover:bg-indigo-600 text-white font-bold text-xs px-4 rounded-xl flex items-center gap-1.5 transition-all active:scale-95 cursor-pointer shrink-0 shadow-md border border-indigo-500/30"
+              className="bg-indigo-600 hover:bg-indigo-550 text-white font-bold text-xs px-4 rounded-xl flex items-center gap-1.5 transition-all active:scale-95 hover:scale-[1.01] cursor-pointer shrink-0 shadow-sm border border-indigo-500/20"
             >
               {isLoading ? (
                 <RefreshCw className="w-3.5 h-3.5 animate-spin" />
