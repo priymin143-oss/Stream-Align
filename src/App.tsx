@@ -11,6 +11,8 @@ import ShiningWaveLogo from "./components/ShiningWaveLogo";
 import SkillGapAnalysis from "./components/SkillGapAnalysis";
 import JobMarketAlerts from "./components/JobMarketAlerts";
 import EmailVerificationWidget from "./components/EmailVerificationWidget";
+import CareerSimulation from "./components/CareerSimulation";
+import IndustryConnection from "./components/IndustryConnection";
 import { Compass, Sparkles, BookOpen, BrainCircuit, UserCheck, ArrowRight, Loader2, RefreshCw, Star, Award, Shield, Users, Mail, Bell, Flame, Sun, Moon, MessageSquare } from "lucide-react";
 import { generateLocalReport, calculateWeightedScore } from "./lib/fallbackGenerator";
 
@@ -69,7 +71,7 @@ export default function App() {
   }, [selectedHobbies, marks]);
   
   // Mode selection
-  const [activeTab, setActiveTab] = useState<"counselor" | "milestones" | "gap-analysis" | "alerts" | "gamification">("counselor");
+  const [activeTab, setActiveTab] = useState<"counselor" | "milestones" | "gap-analysis" | "alerts" | "simulation" | "industry-connection" | "gamification">("counselor");
 
   // Gamification States
   const [points, setPoints] = useState<number>(300);
@@ -358,6 +360,32 @@ export default function App() {
                 }`}
               >
                 Market Alerts
+              </button>
+              <button
+                onClick={() => setActiveTab("simulation")}
+                disabled={!selectedCareer}
+                className={`text-xs font-bold px-3.5 py-2 rounded-lg transition-all cursor-pointer ${
+                  !selectedCareer ? "opacity-50 cursor-not-allowed" : ""
+                } ${
+                  activeTab === "simulation"
+                    ? "bg-white dark:bg-slate-800 text-indigo-700 dark:text-indigo-400 border border-slate-200 dark:border-slate-700 shadow-sm"
+                    : "text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200"
+                }`}
+              >
+                Career Simulation
+              </button>
+              <button
+                onClick={() => setActiveTab("industry-connection")}
+                disabled={!selectedCareer}
+                className={`text-xs font-bold px-3.5 py-2 rounded-lg transition-all cursor-pointer ${
+                  !selectedCareer ? "opacity-50 cursor-not-allowed" : ""
+                } ${
+                  activeTab === "industry-connection"
+                    ? "bg-white dark:bg-slate-800 text-indigo-700 dark:text-indigo-400 border border-slate-200 dark:border-slate-700 shadow-sm"
+                    : "text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200"
+                }`}
+              >
+                Connect with Experts
               </button>
             </div>
           </div>
@@ -662,6 +690,38 @@ export default function App() {
                     educationQualifications
                   }}
                   careerPaths={report.longTermCareers.map((c) => c.careerTitle)}
+                  onAwardPoints={handleAwardPoints}
+                />
+              ) : activeTab === "simulation" ? (
+                /* Dynamic Career Simulation feature */
+                <CareerSimulation
+                  profile={{
+                    name: studentName,
+                    hobbies: selectedHobbies,
+                    browsingLogs,
+                    marks,
+                    technicalSkills,
+                    softSkills,
+                    workExperience,
+                    educationQualifications
+                  }}
+                  careers={report.longTermCareers}
+                  onAwardPoints={handleAwardPoints}
+                />
+              ) : activeTab === "industry-connection" ? (
+                /* Industry professional expert matches and forum feature */
+                <IndustryConnection
+                  profile={{
+                    name: studentName,
+                    hobbies: selectedHobbies,
+                    browsingLogs,
+                    marks,
+                    technicalSkills,
+                    softSkills,
+                    workExperience,
+                    educationQualifications
+                  }}
+                  careers={report.longTermCareers}
                   onAwardPoints={handleAwardPoints}
                 />
               ) : null}

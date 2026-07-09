@@ -994,10 +994,21 @@ app.post("/api/career/chat", async (req, res) => {
 
 // AI-powered Skill Gap Analysis Endpoint
 app.post("/api/career/gap-analysis", async (req, res) => {
-  const { profile, careerTitle, skillsRequired } = req.body;
+  const { profile, careerTitle } = req.body;
+  let { skillsRequired } = req.body;
   
-  if (!profile || !careerTitle || !skillsRequired) {
-    return res.status(400).json({ error: "profile, careerTitle, and skillsRequired are required" });
+  if (!profile || !careerTitle) {
+    return res.status(400).json({ error: "profile and careerTitle are required" });
+  }
+
+  // Handle missing or invalid skillsRequired gracefully
+  if (!skillsRequired || !Array.isArray(skillsRequired) || skillsRequired.length === 0) {
+    skillsRequired = [
+      "Advanced Systems Architecture", 
+      "Analytical Problem Solving", 
+      "Strategic Collaboration",
+      "Modern Technical Standards"
+    ];
   }
 
   const apiKey = process.env.GEMINI_API_KEY;
@@ -1080,10 +1091,16 @@ app.post("/api/career/gap-analysis", async (req, res) => {
 
 // Real-time Job Market Alert System Endpoint
 app.post("/api/career/alerts", async (req, res) => {
-  const { profile, careerPaths } = req.body;
+  const { profile } = req.body;
+  let { careerPaths } = req.body;
 
-  if (!profile || !careerPaths || !Array.isArray(careerPaths)) {
-    return res.status(400).json({ error: "profile and careerPaths array are required" });
+  if (!profile) {
+    return res.status(400).json({ error: "profile is required" });
+  }
+
+  // Handle missing or invalid careerPaths gracefully
+  if (!careerPaths || !Array.isArray(careerPaths) || careerPaths.length === 0) {
+    careerPaths = ["AI & Full-Stack Systems Architect", "Biotechnology & CRISPR Gene-Editing Specialist"];
   }
 
   const apiKey = process.env.GEMINI_API_KEY;
