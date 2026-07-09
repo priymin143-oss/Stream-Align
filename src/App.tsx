@@ -267,14 +267,17 @@ export default function App() {
       <header className="border-b border-slate-200 dark:border-slate-800 bg-white/95 dark:bg-slate-900/95 sticky top-0 z-50 backdrop-blur shadow-sm transition-colors duration-300">
         <div className="max-w-7xl mx-auto px-4 py-4 flex flex-col sm:flex-row justify-between items-center gap-4">
           <div className="flex items-center gap-3">
-            <div className="relative w-11 h-11 flex items-center justify-center rounded-2xl bg-slate-900 shadow-md border border-slate-200 dark:border-slate-800 group overflow-hidden">
+            <div className="relative w-11 h-11 flex items-center justify-center rounded-2xl bg-slate-900 shadow-md border border-slate-200 dark:border-slate-800 group overflow-hidden cursor-pointer">
               {/* Elegant deep gradient background */}
-              <div className="absolute inset-0 bg-gradient-to-tr from-slate-800 via-indigo-950 to-slate-900 opacity-95" />
+              <div className="absolute inset-0 bg-gradient-to-tr from-slate-900 via-indigo-950 to-slate-900 opacity-95 group-hover:opacity-90 transition-opacity duration-500" />
               {/* Subtle dynamic border glow */}
-              <div className="absolute -inset-1 bg-gradient-to-r from-indigo-500 to-amber-500 rounded-2xl blur opacity-20 group-hover:opacity-40 transition duration-500" />
+              <div className="absolute -inset-1 bg-gradient-to-r from-indigo-500 via-purple-500 to-amber-500 rounded-2xl blur opacity-30 group-hover:opacity-70 transition duration-500 animate-pulse" />
               
-              <div className="relative flex items-center justify-center w-full h-full p-2.5">
-                <img src="/favicon.svg" alt="Stream Align Logo" className="w-full h-full object-contain filter drop-shadow group-hover:scale-110 transition-transform duration-300" referrerPolicy="no-referrer" />
+              <div className="relative flex items-center justify-center w-full h-full">
+                <Compass 
+                  className="w-6 h-6 text-indigo-400 dark:text-indigo-300 transform group-hover:rotate-[360deg] group-hover:scale-110 transition-all duration-700"
+                  style={{ transitionTimingFunction: "cubic-bezier(0.34, 1.56, 0.64, 1)" }}
+                />
               </div>
             </div>
             <div>
@@ -289,6 +292,9 @@ export default function App() {
           </div>
 
           <div className="flex flex-wrap items-center gap-3">
+            {/* Email Association Widget Button in Top Panel */}
+            <EmailVerificationWidget />
+
             {/* Theme Toggle Button */}
             <button
               onClick={() => setDarkMode(!darkMode)}
@@ -436,8 +442,6 @@ export default function App() {
             </div>
           </div>
 
-          {/* Email verification optional widget */}
-          <EmailVerificationWidget />
 
           {/* Grid of Browsing Logs & Hobby entries */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
