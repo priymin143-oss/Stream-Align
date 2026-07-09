@@ -504,6 +504,101 @@ export default function ReportDisplay({
                   )}
                 </div>
               </div>
+
+              {/* Recommended Universities & Programs (Degrees/Diplomas) */}
+              <div className="bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-850 rounded-3xl p-6 mt-6 space-y-4 shadow-sm animate-in fade-in duration-200 transition-colors duration-300">
+                <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-2 border-b border-slate-150 dark:border-slate-800 pb-3">
+                  <div>
+                    <h4 className="text-xs font-bold text-slate-800 dark:text-white uppercase tracking-wider flex items-center gap-1.5">
+                      <BookOpen className="w-4 h-4 text-indigo-600 animate-pulse" />
+                      Recommended Universities & Specific Programs
+                    </h4>
+                    <p className="text-[11px] text-slate-500 dark:text-slate-400 font-medium mt-0.5">
+                      Top degrees, diplomas, and integrated courses that align perfectly with this career path
+                    </p>
+                  </div>
+                  <span className="text-[10px] bg-indigo-50 dark:bg-indigo-950/40 text-indigo-700 dark:text-indigo-300 font-mono font-bold px-2.5 py-1 rounded-md border border-indigo-150 dark:border-indigo-900 uppercase tracking-wider self-start sm:self-center">
+                    Path: {selectedCareer.careerTitle}
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {!selectedCareer.universityRecommendations || selectedCareer.universityRecommendations.length === 0 ? (
+                    <div className="p-6 col-span-2 text-center text-slate-400 font-medium text-[11px] italic bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl">
+                      No program recommendations found for this track. Check back after next dynamic counseling update.
+                    </div>
+                  ) : (
+                    selectedCareer.universityRecommendations.map((uni, uidx) => (
+                      <div key={uidx} className="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200 dark:border-slate-800 space-y-4 flex flex-col justify-between transition-colors duration-300 shadow-sm hover:shadow-md">
+                        <div className="space-y-3">
+                          <div className="flex justify-between items-start gap-2">
+                            <div className="flex flex-wrap gap-1.5">
+                              <span className="text-[9px] uppercase font-extrabold text-indigo-700 dark:text-indigo-300 bg-indigo-50 dark:bg-indigo-950/40 border border-indigo-150 dark:border-indigo-900 px-2 py-0.5 rounded-md">
+                                {uni.programType}
+                              </span>
+                              {uni.globalRanking && (
+                                <span className="text-[9px] font-mono font-bold text-emerald-800 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-150 dark:border-emerald-900/50 px-2 py-0.5 rounded-md">
+                                  🏆 {uni.globalRanking}
+                                </span>
+                              )}
+                            </div>
+                            <span className="text-[10px] text-slate-400 dark:text-slate-500 font-bold bg-slate-50 dark:bg-slate-950 px-2 py-0.5 rounded border border-slate-200 dark:border-slate-800 shrink-0">
+                              ⏳ {uni.duration}
+                            </span>
+                          </div>
+
+                          <div className="space-y-1">
+                            <h5 className="text-sm font-bold text-slate-850 dark:text-white leading-snug tracking-tight">
+                              {uni.programName}
+                            </h5>
+                            <p className="text-xs text-slate-600 dark:text-slate-300 font-extrabold flex flex-wrap items-center gap-1">
+                              🏢 {uni.universityName}
+                              <span className="text-[10px] text-slate-400 dark:text-slate-500 font-medium">({uni.location})</span>
+                            </p>
+                          </div>
+
+                          <div className="space-y-1 pt-1">
+                            <span className="text-[9px] text-slate-400 dark:text-slate-500 font-extrabold uppercase block tracking-wider">Admission Prerequisites</span>
+                            <div className="flex flex-wrap gap-1">
+                              {uni.academicPrerequisites.map((req, ridx) => (
+                                <span key={ridx} className="text-[9px] font-semibold px-2 py-0.5 bg-slate-50 dark:bg-slate-950 text-slate-600 dark:text-slate-400 rounded border border-slate-150 dark:border-slate-855">
+                                  {req}
+                                </span>
+                              ))}
+                            </div>
+                          </div>
+
+                          <div className="space-y-1 pt-1">
+                            <span className="text-[9px] text-slate-400 dark:text-slate-550 font-extrabold uppercase block tracking-wider">Potential Career Outcomes</span>
+                            <div className="flex flex-wrap gap-1">
+                              {uni.potentialCareerOutcomes.map((out, oidx) => (
+                                <span key={oidx} className="text-[9px] font-bold px-2 py-0.5 bg-indigo-50/50 dark:bg-indigo-955/10 text-indigo-700 dark:text-indigo-300 rounded border border-indigo-100/50 dark:border-indigo-900/40">
+                                  {out}
+                                </span>
+                              ))}
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="pt-3 border-t border-slate-100 dark:border-slate-800 flex justify-between items-center text-[10px] font-bold">
+                          <div className="text-slate-500 dark:text-slate-400">
+                            <span className="block text-[8px] uppercase font-extrabold text-slate-400 tracking-wider">Est. Tuition Fee</span>
+                            <span className="text-xs text-slate-700 dark:text-slate-300 font-extrabold">{uni.tuitionFeeRange}</span>
+                          </div>
+                          <a
+                            href={`https://www.google.com/search?q=${encodeURIComponent(uni.universityName + ' ' + uni.programName)}`}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 dark:hover:text-indigo-300 hover:underline flex items-center gap-1 py-1 cursor-pointer"
+                          >
+                            Admission Portal ↗
+                          </a>
+                        </div>
+                      </div>
+                    ))
+                  )}
+                </div>
+              </div>
             </div>
           );
         })()}
@@ -682,11 +777,24 @@ export default function ReportDisplay({
                           <span className="font-mono font-bold text-emerald-700 dark:text-emerald-400">{career.startingSalaryEstimate}</span>
                         </div>
                         <span className="text-[9px] text-slate-400 font-bold uppercase block pt-1">Required Core Skills</span>
-                        <div className="flex flex-wrap gap-1">
+                        <div className="flex flex-wrap gap-1 mb-2">
                           {career.skillsRequired.slice(0, 3).map((s, sidx) => (
                             <span key={sidx} className="bg-white dark:bg-slate-900 text-slate-500 dark:text-slate-400 text-[9px] font-bold px-1 rounded border border-slate-200 dark:border-slate-800">{s}</span>
                           ))}
                         </div>
+                        {career.universityRecommendations && career.universityRecommendations.length > 0 && (
+                          <div className="pt-1.5 border-t border-slate-150 dark:border-slate-850 space-y-0.5">
+                            <span className="text-[9px] text-slate-400 font-bold uppercase block">Suggested Programs</span>
+                            <div className="space-y-1 text-[9px] text-slate-600 dark:text-slate-350">
+                              {career.universityRecommendations.slice(0, 2).map((uni, uidx) => (
+                                <div key={uidx} className="flex flex-col leading-tight font-medium">
+                                  <span className="font-bold text-indigo-700 dark:text-indigo-400">🎓 {uni.programName}</span>
+                                  <span className="text-[8px] text-slate-400">@{uni.universityName}</span>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        )}
                       </div>
                     </div>
                   ))}

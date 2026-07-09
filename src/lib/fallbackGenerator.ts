@@ -1,4 +1,4 @@
-import { AnalysisReport, StreamRecommendation, CareerOption, CourseSuggestion, CareerMilestone, AlternativeMilestone } from "../types";
+import { AnalysisReport, StreamRecommendation, CareerOption, CourseSuggestion, CareerMilestone, AlternativeMilestone, UniversityRecommendation } from "../types";
 
 export const FALLBACK_STREAM_POOL: Record<string, {
   streamName: string;
@@ -49,6 +49,7 @@ export const FALLBACK_CAREER_POOL: Record<string, {
   startingSalaryEstimate: string;
   skillsRequired: string[];
   milestones: any[];
+  universityRecommendations?: UniversityRecommendation[];
 }[]> = {
   PCM: [
     {
@@ -63,6 +64,41 @@ export const FALLBACK_CAREER_POOL: Record<string, {
         { stage: "Postgrad/Specialization", title: "Specialized Certifications or M.S. in Intelligent Systems", timeline: "Years 7-8", description: "Gain advanced credentials in Neural Networks and Machine Learning Operations (MLOps) or complete specialized research projects.", skillsToAcquire: ["TensorFlow/PyTorch", "Kubernetes", "MLOps", "Distributed Computing"] },
         { stage: "Early Career", title: "Junior Software & AI Engineer", timeline: "Years 9-10", description: "Secure a full-time role at a high-growth tech company, working closely with senior architects to deploy robust client-server pipelines.", skillsToAcquire: ["Production Debugging", "CI/CD Pipelines", "Agile Methodologies"] },
         { stage: "Long-term Professional", title: "Chief AI Systems Architect / VP of Engineering", timeline: "Years 11+", description: "Design complex cloud architectures, manage multi-disciplinary engineering teams, and deliver enterprise-wide AI systems.", skillsToAcquire: ["Executive Leadership", "Strategic Architecture", "Risk Assessment"] }
+      ],
+      universityRecommendations: [
+        {
+          universityName: "Indian Institute of Technology (IIT) Delhi",
+          location: "New Delhi, India",
+          programName: "B.Tech. in Computer Science and Engineering",
+          programType: "Degree",
+          duration: "4 Years",
+          academicPrerequisites: ["JEE Advanced Rank < 100", "Class 12 Marks > 75%"],
+          potentialCareerOutcomes: ["Software Architect", "AI Research Engineer", "Systems Architect"],
+          tuitionFeeRange: "₹2 Lakhs - ₹3 Lakhs per annum",
+          globalRanking: "QS World Rank #150"
+        },
+        {
+          universityName: "Massachusetts Institute of Technology (MIT)",
+          location: "Cambridge, MA, USA",
+          programName: "B.S. in Computer Science and Engineering",
+          programType: "Degree",
+          duration: "4 Years",
+          academicPrerequisites: ["GPA 4.0/4.0", "SAT/ACT High Percentile", "Advanced Coding Portfolio"],
+          potentialCareerOutcomes: ["Lead System Architect", "Machine Learning Director", "CTO"],
+          tuitionFeeRange: "$55,000 - $60,000 per annum",
+          globalRanking: "QS World Rank #1"
+        },
+        {
+          universityName: "BITS Pilani",
+          location: "Pilani, Rajasthan, India",
+          programName: "B.E. in Computer Science",
+          programType: "Degree",
+          duration: "4 Years",
+          academicPrerequisites: ["BITSAT Score > 320/390", "Class 12 Marks > 75% in PCM"],
+          potentialCareerOutcomes: ["Full-Stack Engineer", "Backend Lead", "Cloud Engineer"],
+          tuitionFeeRange: "₹4 Lakhs - ₹5 Lakhs per annum",
+          globalRanking: "QS Asia Rank #180"
+        }
       ]
     },
     {
@@ -77,6 +113,30 @@ export const FALLBACK_CAREER_POOL: Record<string, {
         { stage: "Postgrad/Specialization", title: "M.S. in Robotics or Systems Control", timeline: "Years 7-8", description: "Publish or present research in autonomous systems navigation, or complete specialized graduate research projects.", skillsToAcquire: ["Computer Vision", "LiDAR Mapping", "Path Planning Algorithms"] },
         { stage: "Early Career", title: "Automation & Controls Integration Engineer", timeline: "Years 9-10", description: "Deploy automated control software to factory floors, debug hardware/software interfaces, and optimize sensor feedback loops.", skillsToAcquire: ["Real-time Operating Systems", "Industrial Protocols"] },
         { stage: "Long-term Professional", title: "Director of Autonomous Systems Engineering", timeline: "Years 11+", description: "Head up the development of a complete autonomous vehicle or robotics product line, managing hardware-software synchronization.", skillsToAcquire: ["Team Management", "IP Protection", "Advanced Hardware Procurement"] }
+      ],
+      universityRecommendations: [
+        {
+          universityName: "Indian Institute of Technology (IIT) Bombay",
+          location: "Mumbai, India",
+          programName: "B.Tech. in Mechanical Engineering with Robotics Minor",
+          programType: "Degree",
+          duration: "4 Years",
+          academicPrerequisites: ["JEE Advanced Rank < 300", "Class 12 Marks > 75%"],
+          potentialCareerOutcomes: ["Robotics Engineer", "Automation Developer", "Control Systems Designer"],
+          tuitionFeeRange: "₹2.2 Lakhs per annum",
+          globalRanking: "QS World Rank #118"
+        },
+        {
+          universityName: "Carnegie Mellon University (CMU)",
+          location: "Pittsburgh, PA, USA",
+          programName: "B.S. in Robotics Engineering",
+          programType: "Degree",
+          duration: "4 Years",
+          academicPrerequisites: ["SAT Math > 780", "High School Calculus & Physics", "Personal Robotics Projects"],
+          potentialCareerOutcomes: ["Autonomous Vehicles Specialist", "Robotics Research Engineer", "Firmware Architect"],
+          tuitionFeeRange: "$58,000 per annum",
+          globalRanking: "World Rank #1 in Robotics"
+        }
       ]
     }
   ],
@@ -93,6 +153,30 @@ export const FALLBACK_CAREER_POOL: Record<string, {
         { stage: "Postgrad/Specialization", title: "Ph.D. in Genetics, Biotech, or Molecular Medicine", timeline: "Years 7-10", description: "Produce a thesis on cellular pathways or targeted gene therapies. Complete high-quality scientific research papers.", skillsToAcquire: ["CRISPR-Cas9 Synthesis", "Statistical Genomics", "Microscopy"] },
         { stage: "Early Career", title: "Research Scientist / Clinical Gene Analyst", timeline: "Years 11-12", description: "Work inside top pharmaceutical labs or agritech firms to screen molecular samples and run computational models of protein folding.", skillsToAcquire: ["Drug Discovery Software", "FDA Compliance"] },
         { stage: "Long-term Professional", title: "Head of Genomic Medicine & Biotech Therapeutics", timeline: "Years 13+", description: "Direct clinical-stage research departments, securing venture capital or grants to bring revolutionary gene therapies to clinical trials.", skillsToAcquire: ["Venture Capital Pitching", "Clinical Trial Protocols", "Team Leadership"] }
+      ],
+      universityRecommendations: [
+        {
+          universityName: "All India Institute of Medical Sciences (AIIMS)",
+          location: "New Delhi, India",
+          programName: "B.Sc. (Hons) in Human Biology & Biotechnology",
+          programType: "Degree",
+          duration: "3 Years",
+          academicPrerequisites: ["AIIMS Entrance Exam / NEET Rank", "Class 12 Marks > 60% in PCB"],
+          potentialCareerOutcomes: ["Genomic Analyst", "Clinical Researcher", "Bioinformatics Specialist"],
+          tuitionFeeRange: "₹2,000 - ₹5,000 per annum (Highly subsidized)",
+          globalRanking: "National Rank #1 in Medical"
+        },
+        {
+          universityName: "Johns Hopkins University",
+          location: "Baltimore, MD, USA",
+          programName: "B.S. in Molecular and Cellular Biology",
+          programType: "Degree",
+          duration: "4 Years",
+          academicPrerequisites: ["GPA > 3.9", "Strong AP Biology & Chemistry", "Lab Research Portfolio"],
+          potentialCareerOutcomes: ["CRISPR Researcher", "Gene Therapy Scientist", "Molecular Pathologist"],
+          tuitionFeeRange: "$60,000 per annum",
+          globalRanking: "World Rank #15"
+        }
       ]
     }
   ],
@@ -109,6 +193,30 @@ export const FALLBACK_CAREER_POOL: Record<string, {
         { stage: "Postgrad/Specialization", title: "Chartered Financial Analyst (CFA) or MBA in Finance", timeline: "Years 7-8", description: "Pass the rigorous CFA Level 1 & 2 examinations, or attend a top business school specializing in private equity and quantitative portfolios.", skillsToAcquire: ["Asset Valuation", "Investment Banking Theory", "Strategic Management"] },
         { stage: "Early Career", title: "Investment Associate / Fintech Risk Analyst", timeline: "Years 9-10", description: "Analyze market dynamics for a venture capital firm, perform due diligence on series-A fintech startups, and model financial risk profiles.", skillsToAcquire: ["Due Diligence", "Pitch Decks Analysis", "Market Sizing"] },
         { stage: "Long-term Professional", title: "Managing Partner / VP of Investment Strategy", timeline: "Years 11+", description: "Control multi-million dollar venture capital funds, guide portfolio companies to successful public offerings, and direct macroeconomic investment policies.", skillsToAcquire: ["Macroeconomic Strategy", "Fundraising", "Executive Board Relations"] }
+      ],
+      universityRecommendations: [
+        {
+          universityName: "Shri Ram College of Commerce (SRCC)",
+          location: "New Delhi, India",
+          programName: "B.Com. (Hons) in Financial Analysis",
+          programType: "Degree",
+          duration: "3 Years",
+          academicPrerequisites: ["CUET Score > 99th Percentile", "Class 12 Mathematics Mandatory"],
+          potentialCareerOutcomes: ["Investment Analyst", "Risk Manager", "Venture Capital Associate"],
+          tuitionFeeRange: "₹30,000 per annum",
+          globalRanking: "National Rank #1 in Commerce"
+        },
+        {
+          universityName: "University of Pennsylvania (Wharton School)",
+          location: "Philadelphia, PA, USA",
+          programName: "B.S. in Economics (Concentration in Quantitative Finance)",
+          programType: "Degree",
+          duration: "4 Years",
+          academicPrerequisites: ["Exceptional Academic Profile", "SAT Math 800 Preferred", "Leadership Essays"],
+          potentialCareerOutcomes: ["Quantitative Trader", "Fintech Founder", "Private Equity Associate"],
+          tuitionFeeRange: "$62,000 per annum",
+          globalRanking: "QS Business Rank #1"
+        }
       ]
     }
   ],
@@ -125,6 +233,30 @@ export const FALLBACK_CAREER_POOL: Record<string, {
         { stage: "Postgrad/Specialization", title: "M.S. in Human-Computer Interaction (HCI) or Behavioral Tech", timeline: "Years 7-8", description: "Conduct advanced research on virtual environments and voice interfaces. Design detailed mental models for multi-modal systems.", skillsToAcquire: ["HCI Principles", "Interactive Prototypes", "A/B Testing Methods"] },
         { stage: "Early Career", title: "User Experience (UX) Researcher / Interaction Designer", timeline: "Years 9-10", description: "Collaborate with full-stack developers to design interactive features, run user diagnostic tests, and structure clear screen wireframes.", skillsToAcquire: ["Usability Diagnostics", "Design Hand-off Systems"] },
         { stage: "Long-term Professional", title: "Chief Experience Officer (CXO) / VP of Product Design", timeline: "Years 11+", description: "Command complete product design methodologies, ensure company-wide empathy/accessibility design standards, and direct major user-facing features.", skillsToAcquire: ["Product Vision", "Brand Synthesis", "Design Leadership"] }
+      ],
+      universityRecommendations: [
+        {
+          universityName: "Ashoka University",
+          location: "Sonipat, Haryana, India",
+          programName: "B.A. (Hons) in Psychology with Computer Science Interdisciplinary",
+          programType: "Degree",
+          duration: "3 Years (optional 4th year)",
+          academicPrerequisites: ["Ashoka Aptitude Test (AAT)", "Class 12 English & Social Science > 85%"],
+          potentialCareerOutcomes: ["UX Researcher", "Human-AI Interaction Designer", "Cognitive Psychologist"],
+          tuitionFeeRange: "₹8.5 Lakhs per annum",
+          globalRanking: "National Rank #5 in Liberal Arts"
+        },
+        {
+          universityName: "Stanford University",
+          location: "Stanford, CA, USA",
+          programName: "B.S. in Symbolic Systems (Human-Computer Interaction)",
+          programType: "Degree",
+          duration: "4 Years",
+          academicPrerequisites: ["Top High School Transcript", "Exceptional Creative Portfolio", "SAT/ACT High Percentile"],
+          potentialCareerOutcomes: ["UX Design Director", "AI Ethics Advisor", "Product Manager"],
+          tuitionFeeRange: "$59,000 per annum",
+          globalRanking: "QS World Rank #5"
+        }
       ]
     }
   ]

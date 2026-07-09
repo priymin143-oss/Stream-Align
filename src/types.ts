@@ -67,6 +67,18 @@ export interface CourseSuggestion {
   duration: string;
 }
 
+export interface UniversityRecommendation {
+  universityName: string;
+  location: string;
+  programName: string; // e.g. "B.Tech in Artificial Intelligence", "B.Sc. in Genetics"
+  programType: "Degree" | "Diploma" | "Integrated";
+  duration: string; // e.g. "4 Years", "3 Years"
+  academicPrerequisites: string[]; // e.g. ["Class 12 PCM > 85%", "JEE Main score"]
+  potentialCareerOutcomes: string[]; // e.g. ["Machine Learning Engineer", "System Architect"]
+  tuitionFeeRange: string; // e.g. "₹2.5L - ₹4L per annum"
+  globalRanking?: string; // e.g. "QS Rank #50" or "National Rank #5"
+}
+
 export interface CareerOption {
   careerTitle: string;
   description: string;
@@ -75,6 +87,7 @@ export interface CareerOption {
   skillsRequired: string[];
   milestones: CareerMilestone[];
   courseSuggestions?: CourseSuggestion[];
+  universityRecommendations?: UniversityRecommendation[];
 }
 
 export interface GroundingSource {

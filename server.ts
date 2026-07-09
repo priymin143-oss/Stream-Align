@@ -641,7 +641,7 @@ app.post("/api/career/analyze", async (req, res) => {
       6. Provide a general advice paragraph ("generalAdvice") encouraging the student.
       7. Provide "marketInsights" based on real-time 2026/2027 job search trends.
       
-      *GOOGLE SEARCH GROUNDING OPTION*: You MUST search the web to make sure the recommended careers, starting salaries, and job growth trends are accurate for the current years (2026/2027).
+      *GOOGLE SEARCH GROUNDING OPTION*: You MUST search the web to make sure the recommended careers, starting salaries, job growth trends, and leading university/program recommendations are accurate for the current years (2026/2027). Recommending both premier national institutes and global options considering location, prerequisites, and outcomes. Include 'universityRecommendations' inside each career option object with universityName, location, programName, programType (Degree/Diploma/Integrated), duration, academicPrerequisites, potentialCareerOutcomes, tuitionFeeRange, globalRanking.
       
       Respond STRICTLY in JSON format following the schema. No markdown backticks.
     `;
